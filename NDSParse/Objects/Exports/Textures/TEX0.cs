@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using NDSParse.Conversion.Textures;
 using NDSParse.Conversion.Textures.Colors;
 using NDSParse.Conversion.Textures.Colors.Types;
@@ -82,7 +83,7 @@ public class TEX0 : NDSExport
                 TextureFormat.A5I3 => pixelReader.ReadPixels<Alpha5Indexed3>(textureInfo.Width, textureInfo.Height)
             };
             
-            Textures.Add(new IndexedPaletteImage(textureInfo.Width, textureInfo.Height, pixels, [palette], textureName));
+            Textures.Add(new IndexedPaletteImage(textureInfo.Width, textureInfo.Height, pixels, [palette], textureName, textureInfo.FirstColorIsTransparent));
         }
     }
 }
