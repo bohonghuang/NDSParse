@@ -7,7 +7,7 @@ public class BaseReader : GenericBufferReader
 {
     public string Name;
     public BaseReader Owner;
-    public BaseReader AbsoluteOwner
+    public virtual BaseReader AbsoluteOwner
     {
         get
         {
@@ -56,5 +56,20 @@ public class BaseReader : GenericBufferReader
     {
         Position = 0;
         return ReadBytes(Size);
+    }
+    
+    public T Peek<T>(Func<T> func)
+    {
+        var originalPos = Position;
+        var ret = func();
+        Position = originalPos;
+        return ret;
+    }
+    
+    public void Peek(Action func)
+    {
+        var originalPos = Position;
+        func();
+        Position = originalPos;
     }
 }

@@ -39,10 +39,10 @@ public class DataBlock
         return new BaseReader(GetBytes(), name) { Owner = Owner };
     }
     
-    /*public AssetReader CreateAssetReader(string name = "")
+    public AssetReader CreateAssetReader(string name = "")
     {
         return new AssetReader(GetBytes(), name);
-    }*/
+    }
     
     private byte[] GetBytes()
     {
