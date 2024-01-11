@@ -13,9 +13,14 @@ public abstract class PixelTypeBase
         for (int pixelIndex = 0, bitIndex = 0; pixelIndex < pixelCount; pixelIndex++, bitIndex += BitsPerPixel) 
         {
             var value = (data[bitIndex / 8] >> bitIndex % 8) & bitMask;
-            pixels[pixelIndex] = new IndexedPixel((byte) value);
+            pixels[pixelIndex] = ProvidePixel((byte) value);
         }
 
         return pixels;
+    }
+
+    public virtual IndexedPixel ProvidePixel(byte data)
+    {
+        return new IndexedPixel(data);
     }
 }

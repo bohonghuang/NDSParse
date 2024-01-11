@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace NDSParse.Objects.Exports;
 
-public class NDSObject
+public class NDSObject : Deserializable
 {
     public ushort Version;
     public uint FileSize;
@@ -13,15 +13,8 @@ public class NDSObject
 
     public virtual string Magic => string.Empty;
     protected virtual bool ContainsSubfiles => false;
-
-    public static T Construct<T>(BaseReader reader) where T : NDSObject, new()
-    {
-        var obj = new T();
-        obj.Deserialize(reader);
-        return obj;
-    }
     
-    public virtual void Deserialize(BaseReader reader)
+    public override void Deserialize(BaseReader reader)
     {
         var magic = reader.ReadString(4);
         if (magic != Magic)

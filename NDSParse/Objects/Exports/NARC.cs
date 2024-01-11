@@ -23,6 +23,7 @@ public class NARC : NDSObject
         for (ushort id = 0; id < fat.FileBlocks.Count; id++)
         {
             var fileBlock = fat.FileBlocks[id];
+            var startPosition = fileBlock.Offset + dataOffset;
 
             string name;
             if (id < fnt.FilesById.Count)
@@ -31,6 +32,7 @@ public class NARC : NDSObject
             }
             else if (fileBlock.Length > 0)
             {
+                reader.Position = startPosition;
                 var extension = reader.Peek(() => reader.ReadString(4)).ToLower();
                 if (!FileTypeRegistry.Contains(extension)) extension = "bin";
                 
@@ -41,7 +43,7 @@ public class NARC : NDSObject
                 continue;
             }
 
-            Files[name] = new GameFile(name, new DataBlock(reader, fileBlock.Offset + dataOffset, fileBlock.Length));
+            Files[name] = new GameFile(name, new DataBlock(reader, startPosition, fileBlock.Length));
         }
     }
 }

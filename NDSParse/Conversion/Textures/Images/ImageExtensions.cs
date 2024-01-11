@@ -1,6 +1,9 @@
+using NDSParse.Conversion.Textures.Colors;
+using NDSParse.Conversion.Textures.Colors.Types;
 using NDSParse.Conversion.Textures.Images.Types;
 using NDSParse.Conversion.Textures.Palettes;
 using NDSParse.Conversion.Textures.Pixels;
+using NDSParse.Conversion.Textures.Pixels.Types;
 using NDSParse.Objects.Rom;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp;
@@ -10,27 +13,48 @@ namespace NDSParse.Conversion.Textures.Images;
 
 public static class ImageExtensions
 {
-    public static Image<Rgba32> ToImage(this IndexedPaletteImage image)
-    {
-        return ToImage(image.Width, image.Height, image.Pixels, image.Palettes);
-    }
+    public delegate void PixelRef(ref Rgba32 pixel, int index);
     
-    public static Image<Rgba32> ToImage(int width, int height, IndexedPixel[] pixels, List<Palette> palettes)
+    public static void IteratePixels(this Image<Rgba32> image, PixelRef action)
     {
-        var bitmap = new Image<Rgba32>(width, height);
         var pixelIndex = 0;
-        bitmap.ProcessPixelRows(accessor =>
+        image.ProcessPixelRows(accessor =>
         {
             for (var y = 0; y < accessor.Height; y++)
             {
                 var pixelRow = accessor.GetRowSpan(y);
                 foreach (ref var pixel in pixelRow)
                 {
-                    var sourcePixel = pixels[pixelIndex];
-                    pixel = palettes[sourcePixel.PaletteIndex].Colors[sourcePixel.Index].ToPixel<Rgba32>();
+                    action(ref pixel, pixelIndex);
                     pixelIndex++;
                 }
             }
+        });
+    }
+    
+    public static Image<Rgba32> ToImage(this IndexedPaletteImage image)
+    {
+        return ToImage(image.Width, image.Height, image.Pixels, image.Palettes, image.IsFirstColorTransparent);
+    }
+    
+    public static Image<Rgba32> ToImage(int width, int height, IndexedPixel[] pixels, List<Palette> palettes, bool firstColorIsTransparent = false)
+    {
+        var bitmap = new Image<Rgba32>(width, height);
+        bitmap.IteratePixels((ref Rgba32 pixel, int index) =>
+        {
+            var sourcePixel = pixels[index];
+            var color = palettes[sourcePixel.PaletteIndex].Colors[sourcePixel.Index].ToPixel<Rgba32>();
+            if (sourcePixel.Alpha != 255)
+            {
+                color.A = sourcePixel.Alpha;
+            }
+
+            if (sourcePixel.Index == 0 && firstColorIsTransparent)
+            {
+                color.A = 0;
+            }
+
+            pixel = color;
         });
 
         return bitmap;

@@ -1,6 +1,5 @@
-using System.Collections.Concurrent;
+using System.Diagnostics;
 using NDSParse.Data;
-using NDSParse.Extensions;
 using NDSParse.Objects;
 using NDSParse.Objects.Exports;
 using NDSParse.Objects.Files;
@@ -53,7 +52,9 @@ public class NDSProvider
                 var basePath = path.Replace(".narc", string.Empty);
                 foreach (var (narcPath, narcGameFile) in narc.Files)
                 {
+                    // move things in terms of global reader
                     var newPath = basePath + $"/{narcPath}";
+                    narcGameFile.Data.Owner = _reader;
                     narcGameFile.Data.Offset += gameFile.Data.Offset;
                     Files[newPath] = narcGameFile;
                 }
@@ -65,7 +66,7 @@ public class NDSProvider
     
     public T LoadObject<T>(string path) where T : NDSObject, new() => LoadObject<T>(Files[path]);
 
-    public T LoadObject<T>(GameFile file) where T : NDSObject, new() => NDSObject.Construct<T>(CreateReader(file));
+    public T LoadObject<T>(GameFile file) where T : NDSObject, new() => Deserializable.Construct<T>(CreateReader(file));
     
     public bool TryLoadObject<T>(string path, out T data) where T : NDSObject, new() => TryLoadObject(Files[path], out data);
     
