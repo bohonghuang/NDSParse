@@ -1,3 +1,5 @@
+using NDSParse.Objects.Files;
+
 namespace NDSParse.Data;
 
 public class DataBlock
@@ -39,9 +41,9 @@ public class DataBlock
         return new BaseReader(GetBytes(), name) { Owner = Owner };
     }
     
-    public AssetReader CreateAssetReader(string name = "")
+    public AssetReader CreateAssetReader(GameFile file)
     {
-        return new AssetReader(GetBytes(), name);
+        return new AssetReader(GetBytes(), file);
     }
     
     private byte[] GetBytes()

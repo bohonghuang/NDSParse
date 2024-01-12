@@ -1,3 +1,5 @@
+using NDSParse.Conversion.Textures;
+using NDSParse.Conversion.Textures.Images.Types;
 using NDSParse.Data;
 
 namespace NDSParse.Objects.Exports.Textures;
@@ -20,4 +22,6 @@ public class BTX0 : NDSObject
 
         TextureData = Construct<TEX0>(reader.Spliced(SubFileOffsets[0]));
     }
+
+    public IEnumerable<IndexedPaletteImage> GetImages() => TextureData.Textures;
 }

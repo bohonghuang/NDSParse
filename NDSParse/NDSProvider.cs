@@ -52,10 +52,12 @@ public class NDSProvider
                 foreach (var (narcPath, narcGameFile) in narc.Files)
                 {
                     // move things in terms of global reader
+                    var newFile = narcGameFile.Copy();
                     var newPath = basePath + $"/{narcPath}";
-                    narcGameFile.Data.Owner = _reader;
-                    narcGameFile.Data.Offset += gameFile.Data.Offset;
-                    Files[newPath] = narcGameFile;
+                    newFile.Path = newPath;
+                    newFile.Data.Owner = _reader;
+                    newFile.Data.Offset += gameFile.Data.Offset;
+                    Files[newPath] = newFile;
                 }
 
                 Files.Remove(path);

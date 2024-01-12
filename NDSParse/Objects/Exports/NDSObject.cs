@@ -1,10 +1,15 @@
 using NDSParse.Data;
+using NDSParse.Objects.Files;
 using Newtonsoft.Json;
 
 namespace NDSParse.Objects.Exports;
 
 public class NDSObject : Deserializable
 {
+    public string Name => File?.Name ?? string.Empty;
+    public string Path => File?.Path ?? string.Empty;
+    public GameFile? File;
+    
     public ushort Version;
     public uint FileSize;
     public ushort HeaderSize;
@@ -16,6 +21,11 @@ public class NDSObject : Deserializable
     
     public override void Deserialize(BaseReader reader)
     {
+        if (reader is AssetReader assetReader)
+        {
+            File = assetReader.File;
+        }
+        
         var magic = reader.ReadString(4);
         if (magic != Magic)
         {
