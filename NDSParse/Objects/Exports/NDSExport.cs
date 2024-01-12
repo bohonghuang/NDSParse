@@ -11,7 +11,8 @@ public class NDSExport : Deserializable
 
     public const int HEADER_SIZE = 8;
 
-    private long DataOffset;
+    private long Offset;
+    private long Size;
     
     public override void Deserialize(BaseReader reader)
     {
@@ -22,14 +23,20 @@ public class NDSExport : Deserializable
         }
 
         FileSize = reader.Read<uint>();
-        DataOffset = reader.Position;
+        Offset = reader.Position;
+        Size = FileSize - HEADER_SIZE;
     }
 
-    public BaseReader CreateDataReader(BaseReader reader)
+    protected BaseReader CreateDataReader(BaseReader reader)
     {
-        return reader.Spliced((uint) DataOffset, FileSize - HEADER_SIZE);
+        return reader.Spliced((uint) Offset, (uint) Size);
     }
 
+    protected DataBlock CreateDataBlock(BaseReader reader)
+    {
+        return new DataBlock(reader, (int) Offset, (int) Size);
+    }
+    
     public override string ToString()
     {
         return JsonConvert.SerializeObject(this);

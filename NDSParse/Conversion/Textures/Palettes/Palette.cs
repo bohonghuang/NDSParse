@@ -1,5 +1,4 @@
 using NDSParse.Conversion.Textures.Colors;
-using SixLabors.ImageSharp.PixelFormats;
 namespace NDSParse.Conversion.Textures.Palettes;
 
 public class Palette
