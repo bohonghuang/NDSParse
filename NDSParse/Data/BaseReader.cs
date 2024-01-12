@@ -27,11 +27,11 @@ public class BaseReader : GenericBufferReader
         Owner = this;
     }
 
-    public BaseReader Spliced(uint position)
+    public BaseReader Spliced(uint position, uint? length = null)
     {
         Position = position;
-        var length = (int) (Size - Position);
-        return new BaseReader(ReadBytes(length));
+        length ??= (uint) (Size - Position);
+        return new BaseReader(ReadBytes((int) length));
     }
     
     public string ReadString(int length, bool unicode = false)

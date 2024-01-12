@@ -1,8 +1,9 @@
 using NDSParse.Data;
+using NDSParse.Objects.Exports;
 
 namespace NDSParse.Objects.Files.FileNameTable;
 
-public class FNTBase
+public class FNTBase : NDSExport
 {
     public Dictionary<ushort, string> FilesById = new();
     public ushort FirstID;

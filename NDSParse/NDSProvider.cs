@@ -2,6 +2,7 @@ using System.Diagnostics;
 using NDSParse.Data;
 using NDSParse.Objects;
 using NDSParse.Objects.Exports;
+using NDSParse.Objects.Exports.Archive;
 using NDSParse.Objects.Files;
 using NDSParse.Objects.Files.FileAllocationTable;
 using NDSParse.Objects.Files.FileNameTable;
@@ -47,8 +48,6 @@ public class NDSProvider
                 if (!path.EndsWith(".narc")) continue;
                 if (!TryLoadObject<NARC>(path, out var narc)) continue;
 
-                Log.Information("Unpacking NARC: {path}", path);
-
                 var basePath = path.Replace(".narc", string.Empty);
                 foreach (var (narcPath, narcGameFile) in narc.Files)
                 {
@@ -63,6 +62,26 @@ public class NDSProvider
             }
         }
     }
+
+    public IEnumerable<GameFile> GetAllFilesOfType<T>() where T : NDSObject, new()
+    {
+        var objectRef = new T();
+        return Files.Values.Where(file => file.Type.Equals(objectRef.Magic, StringComparison.OrdinalIgnoreCase));
+    }
+    
+    public IEnumerable<T> LoadAllFilesOfType<T>() where T : NDSObject, new()
+    {
+        var loaded = new List<T>();
+        foreach (var file in GetAllFilesOfType<T>())
+        {
+            if (TryLoadObject(file, out T data))
+            {
+                loaded.Add(data);
+            }
+        }
+
+        return loaded;
+    }
     
     public T LoadObject<T>(string path) where T : NDSObject, new() => LoadObject<T>(Files[path]);
 
@@ -73,6 +92,7 @@ public class NDSProvider
     public bool TryLoadObject<T>(GameFile file, out T data) where T : NDSObject, new()
     {
         data = null!;
+        data = LoadObject<T>(file);
         try
         {
             data = LoadObject<T>(file);

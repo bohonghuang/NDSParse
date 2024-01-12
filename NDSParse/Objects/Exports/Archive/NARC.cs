@@ -1,9 +1,7 @@
 using NDSParse.Data;
 using NDSParse.Objects.Files;
-using NDSParse.Objects.Files.FileAllocationTable;
-using NDSParse.Objects.Files.FileNameTable;
 
-namespace NDSParse.Objects.Exports;
+namespace NDSParse.Objects.Exports.Archive;
 
 public class NARC : NDSObject
 {
@@ -15,10 +13,11 @@ public class NARC : NDSObject
     {
         base.Deserialize(reader);
         
-        var fat = new FATB(reader);
-        var fnt = new FNTB(reader);
-        var fimg = new FIMG(reader);
+        var fat = Construct<BTAF>(reader);
+        var fnt = Construct<BTNF>(reader);
+        var gimf = Construct<GMIF>(reader);
         
+        // technicaly gmif data but i would rather control it out here
         var dataOffset = (int) reader.Position;
         for (ushort id = 0; id < fat.FileBlocks.Count; id++)
         {

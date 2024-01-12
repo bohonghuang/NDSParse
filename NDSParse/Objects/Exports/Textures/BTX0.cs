@@ -4,7 +4,7 @@ namespace NDSParse.Objects.Exports.Textures;
 
 public class BTX0 : NDSObject
 {
-    public TEX0 Texture;
+    public TEX0 TextureData;
     
     public override string Magic => "BTX0";
     protected override bool ContainsSubfiles => true;
@@ -18,6 +18,6 @@ public class BTX0 : NDSObject
             throw new ParserException("BTX0 should not have more than on sub-file.");
         }
 
-        Texture = Construct<TEX0>(reader.Spliced(SubFileOffsets[0]));
+        TextureData = Construct<TEX0>(reader.Spliced(SubFileOffsets[0]));
     }
 }
