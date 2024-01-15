@@ -5,7 +5,7 @@ namespace NDSParse.Objects.Exports.Archive;
 
 public class NARC : NDSObject
 {
-    public Dictionary<string, GameFile> Files = new();
+    public readonly Dictionary<string, GameFile> Files = new();
     
     public override string Magic => "NARC";
 
@@ -43,6 +43,16 @@ public class NARC : NDSObject
             }
 
             Files[name] = new GameFile(name, new DataBlock(reader, startPosition, fileBlock.Length));
+        }
+    }
+
+    public void MountToProvider(NDSProvider provider)
+    {
+        var basePath = Path.Replace(".narc", string.Empty);
+        foreach (var (path, gameFile) in Files)
+        {
+            var newPath = basePath + $"/{path}";
+            provider.Files[newPath] = gameFile.Copy(newPath);
         }
     }
 }

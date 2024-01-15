@@ -21,17 +21,17 @@ public class BaseReader : GenericBufferReader
         }
     }
 
-    public BaseReader(byte[] buffer, string name = "") : base(buffer)
+    public BaseReader(byte[] buffer, string name = "", BaseReader? owner = null) : base(buffer)
     {
         Name = name;
-        Owner = this;
+        Owner = owner ?? this;
     }
 
     public BaseReader Spliced(uint position, uint? length = null)
     {
         Position = position;
         length ??= (uint) (Size - Position);
-        return new BaseReader(ReadBytes((int) length));
+        return new BaseReader(ReadBytes((int) length), owner: Owner);
     }
     
     public string ReadString(int length, bool unicode = false)

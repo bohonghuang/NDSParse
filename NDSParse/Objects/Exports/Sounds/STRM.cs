@@ -3,7 +3,7 @@ using NDSParse.Objects.Exports.Sounds.SoundData;
 
 namespace NDSParse.Objects.Exports.Sounds;
 
-public class STRM : NDSExport
+public class STRM : SoundTypeBase<STRMInfo> 
 {
     public HEAD Header;
     public DATA Data;
@@ -23,7 +23,7 @@ public class STRM : NDSExport
     {
         public WaveType Type;
         public bool Looping;
-        public uint NumChannels;
+        public ushort NumChannels;
         public ushort SampleRate;
         public ushort Time;
         public uint LoopOffset; // In Samples
@@ -83,7 +83,7 @@ public class STRM : NDSExport
     }
 }
 
-public class STRMInfo : FileSoundInfo
+public class STRMInfo : SoundInfoTypeBase
 {
     public byte Volume;
     public byte Priority;

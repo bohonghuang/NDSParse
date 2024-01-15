@@ -1,15 +1,17 @@
 ﻿using NDSParse.Data;
+using NDSParse.Objects.Exports.Sounds.SoundData;
+using NDSParse.Objects.Files;
 
-namespace NDSParse.Objects.Exports.Sounds.SoundData;
+namespace NDSParse.Objects.Exports.Sounds;
 
 public class SDAT : NDSObject
 {
+    public List<STRM> Streams = [];
+    
     public SYMB Symbols;
     public INFO Info;
-    public FAT FileBlocks;
+    public FAT FAT;
     public FILE FileInfo;
-    
-    public Dictionary<SoundFileType, NDSObject> Files = new();
     
     public override string Magic => "SDAT";
 
@@ -37,8 +39,30 @@ public class SDAT : NDSObject
 
         Symbols = Construct<SYMB>(reader.Spliced(SymbOffset, SymbSize));
         Info = Construct<INFO>(reader.Spliced(InfoOffset, InfoSize));
-        FileBlocks = Construct<FAT>(reader.Spliced(FATOffset, FATSize));
+        FAT = Construct<FAT>(reader.Spliced(FATOffset, FATSize));
         FileInfo = Construct<FILE>(reader.Spliced(FilesOffset, FilesSize));
+
+        Streams = LoadFiles<STRM, STRMInfo>(SoundFileType.Stream);
+    }
+
+    public List<T> LoadFiles<T, K>(SoundFileType type) where T : SoundTypeBase<K>, new() where K : SoundInfoTypeBase
+    {
+        var symbols = Symbols.Records[type];
+        var infos = Info.Records[type];
+
+        var files = new List<T>();
+        for (ushort index = 0; index < symbols.Count; index++)
+        {
+            var info = infos[index];
+            var data = FAT.FileBlocks[info.FileID];
+            
+            var file = Construct<T>(data.CreateAssetReader());
+            file.File = new FileBase(symbols[index]);
+            file.Info = (K) info;
+            files.Add(file);
+        }
+
+        return files;
     }
 }
 

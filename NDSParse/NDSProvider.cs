@@ -43,25 +43,35 @@ public class NDSProvider
 
         if (UnpackNARCs)
         {
-            foreach (var (path, gameFile) in Files.ToArray())
+            foreach (var narc in LoadAllFilesOfType<NARC>())
             {
-                if (!path.EndsWith(".narc")) continue;
-                if (!TryLoadObject<NARC>(path, out var narc)) continue;
-
-                var basePath = path.Replace(".narc", string.Empty);
-                foreach (var (narcPath, narcGameFile) in narc.Files)
-                {
-                    // move things in terms of global reader
-                    var newFile = narcGameFile.Copy();
-                    var newPath = basePath + $"/{narcPath}";
-                    newFile.Path = newPath;
-                    newFile.Data.Owner = _reader;
-                    newFile.Data.Offset += gameFile.Data.Offset;
-                    Files[newPath] = newFile;
-                }
-
-                Files.Remove(path);
+                narc.MountToProvider(this);
+                Files.Remove(narc.Path);
             }
+        }
+    }
+    
+    protected void Mount(FAT fat, FNT fnt)
+    {
+        for (ushort id = 0; id < fat.FileBlocks.Count; id++)
+        {
+            if (id < fnt.FirstID) continue;
+
+            var fileBlock = fat.FileBlocks[id];
+            if (fileBlock.Length <= 0) continue;
+            
+            var fileName = fnt.FilesById[id];
+            if (!fileName.Contains('.'))
+            {
+                _reader.Position = fileBlock.Offset;
+                var extension = _reader.Peek(() => _reader.ReadString(4)).ToLower();
+                if (!FileTypeRegistry.Contains(extension)) extension = "bin";
+
+                fileName += $".{extension}";
+            }
+
+            var gameFile = new GameFile(fileName, fat.FileBlocks[id]);
+            Files[fileName] = gameFile;
         }
     }
 
@@ -109,28 +119,4 @@ public class NDSProvider
     public AssetReader CreateReader(GameFile file) => file.CreateReader();
     
     public AssetReader CreateReader(string path) => CreateReader(Files[path]);
-
-    protected void Mount(FAT fat, FNT fnt)
-    {
-        for (ushort id = 0; id < fat.FileBlocks.Count; id++)
-        {
-            if (id < fnt.FirstID) continue;
-
-            var fileBlock = fat.FileBlocks[id];
-            if (fileBlock.Length <= 0) continue;
-            
-            var fileName = fnt.FilesById[id];
-            if (!fileName.Contains('.'))
-            {
-                _reader.Position = fileBlock.Offset;
-                var extension = _reader.Peek(() => _reader.ReadString(4)).ToLower();
-                if (!FileTypeRegistry.Contains(extension)) extension = "bin";
-
-                fileName += $".{extension}";
-            }
-
-            var gameFile = new GameFile(fileName, fat.FileBlocks[id]);
-            Files[fileName] = gameFile;
-        }
-    }
 }

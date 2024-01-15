@@ -8,7 +8,7 @@ public class NDSObject : Deserializable
 {
     public string Name => File?.Name ?? string.Empty;
     public string Path => File?.Path ?? string.Empty;
-    public GameFile? File;
+    public FileBase? File;
     
     public ushort Version;
     public uint FileSize;
