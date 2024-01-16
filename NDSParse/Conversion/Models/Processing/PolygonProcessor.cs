@@ -1,9 +1,10 @@
 using System.Numerics;
+using NDSParse.Conversion.Models.Mesh;
 using NDSParse.Extensions;
 using NDSParse.Objects.Exports.Meshes;
 using SixLabors.ImageSharp.PixelFormats;
 
-namespace NDSParse.Conversion.Models;
+namespace NDSParse.Conversion.Models.Processing;
 
 public class PolygonProcessor
 {

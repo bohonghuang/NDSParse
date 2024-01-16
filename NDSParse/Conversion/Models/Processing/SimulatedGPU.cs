@@ -1,7 +1,7 @@
 using System.Numerics;
 using NDSParse.Objects.Exports.Meshes;
 
-namespace NDSParse.Conversion.Models;
+namespace NDSParse.Conversion.Models.Processing;
 
 public class SimulatedGPU
 {

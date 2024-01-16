@@ -1,256 +1,105 @@
-using System.Globalization;
-using System.Numerics;
+using NDSParse.Conversion.Models.Formats;
+using NDSParse.Conversion.Models.Mesh;
+using NDSParse.Conversion.Models.Processing;
 using NDSParse.Objects.Exports.Meshes;
-using SixLabors.ImageSharp.PixelFormats;
 
 namespace NDSParse.Conversion.Models;
 
 public static class ModelExtensions
 {
-    // todo better (original) exporter + bmd0 main + texture export w/ assign and mtl
-    public static OBJ ToMesh(this MDL0Model mdl0)
+    public static List<Model> ExtractModels(this BMD0 bmd0)
     {
-        var processor = new ModelProcessor(mdl0);
-        var sections = processor.Process();
-
-        var obj = new OBJ();
-
-        int vertexId = 0;
-        foreach (var section in sections)
+        var models = new List<Model>();
+        foreach (var dataModel in bmd0.ModelData.Models)
         {
-            var objGroup = new OBJ.Group(section.Name);
+            var processor = new MeshProcessor(dataModel);
             
-            foreach (var polygon in section.Polygons)
+            var model = new Model();
+            model.Name = dataModel.Name;
+            model.Sections = processor.Process();
+
+            var vertexIndex = 0;
+            foreach (var section in model.Sections)
             {
-                objGroup.Vertices.AddRange(polygon.Vertices);
-                objGroup.TextureVertices.AddRange(polygon.TexCoords);
-                objGroup.Normals.AddRange(polygon.Normals);
-                objGroup.VertexColors.AddRange(polygon.Colors);
-
-                switch (polygon.PolygonType)
+                foreach (var polygon in section.Polygons)
                 {
-                    case PolygonType.TRI:
-                        for (int j = 0; j < polygon.Vertices.Count; j += 3)
+                    switch (polygon.PolygonType)
+                    {
+                        case PolygonType.TRI:
                         {
-                            var face = new OBJ.Face(section.MaterialName);
-                            for (int i = 0; i < 3; i++)
+                            for (var vtxCounter = 0; vtxCounter < polygon.Vertices.Count; vtxCounter += 3)
                             {
-                                face.VertexIndices.Add(vertexId);
-                                face.TexCoordIndices.Add(vertexId);
-                                face.NormalIndices.Add(vertexId);
-                                face.VertexColorIndices.Add(vertexId);
-                                vertexId++;
+                                var face = new Face(section.MaterialName);
+                                for (var vtxIdx = 0; vtxIdx < 3; vtxIdx++)
+                                {
+                                    face.AddIndex(vertexIndex + vtxIdx);
+                                }
+                                section.Faces.Add(face);
                             }
-                            objGroup.Faces.Add(face);
-                        }
-                        break;
 
-                    case PolygonType.QUAD:
-                        for (int j = 0; j < polygon.Vertices.Count; j += 4)
+                            vertexIndex += polygon.Vertices.Count;
+                            break;
+                        }
+                        case PolygonType.QUAD:
                         {
-                            var face = new OBJ.Face(section.MaterialName);
-                            for (int i = 0; i < 4; i++)
+                            for (var vtxCounter = 0; vtxCounter < polygon.Vertices.Count; vtxCounter += 4)
                             {
-                                face.VertexIndices.Add(vertexId);
-                                face.TexCoordIndices.Add(vertexId);
-                                face.NormalIndices.Add(vertexId);
-                                face.VertexColorIndices.Add(vertexId);
-                                vertexId++;
+                                var face = new Face(section.MaterialName);
+                                for (var vtxIdx = 0; vtxIdx < 4; vtxIdx++)
+                                {
+                                    face.AddIndex(vertexIndex + vtxIdx);
+                                }
+                                section.Faces.Add(face);
                             }
-                            objGroup.Faces.Add(face);
+                            
+                            vertexIndex += polygon.Vertices.Count;
+                            break;
                         }
-                        break;
-                    
-                    case PolygonType.TRI_STRIP:
-                    case PolygonType.QUAD_STRIP:
-                        void Register(OBJ.Face face, int num)
+                        case PolygonType.TRI_STRIP:
+                        case PolygonType.QUAD_STRIP:
                         {
-                            face.VertexIndices.Add(num);
-                            face.TexCoordIndices.Add(num);
-                            face.NormalIndices.Add(num);
-                            face.VertexColorIndices.Add(num);
-                        }
-                        
-                        for (int j = 0; j + 2 < polygon.Vertices.Count; j += 2)
-                        {
-                            var face = new OBJ.Face(section.MaterialName);
-                            Register(face, vertexId + j);
-                            Register(face, vertexId + j + 1);
-                            Register(face, vertexId + j + 2);
-                            objGroup.Faces.Add(face);
-
-                            if (j + 3 < polygon.Vertices.Count)
+                            for (var vtxCounter = 0; vtxCounter + 2 < polygon.Vertices.Count; vtxCounter += 2)
                             {
-                                var otherFace = new OBJ.Face(section.MaterialName);
-                                Register(otherFace, vertexId + j + 1);
-                                Register(otherFace, vertexId + j + 3);
-                                Register(otherFace, vertexId + j + 2);
-                                objGroup.Faces.Add(otherFace);
-                            }
-                        }
+                                var firstFace = new Face(section.MaterialName);
+                                firstFace.AddIndex(vertexIndex + vtxCounter);
+                                firstFace.AddIndex(vertexIndex + vtxCounter + 1);
+                                firstFace.AddIndex(vertexIndex + vtxCounter + 2);
+                                section.Faces.Add(firstFace);
 
-                        vertexId += polygon.Vertices.Count;
-                        break;
+                                if (vtxCounter + 3 < polygon.Vertices.Count)
+                                {
+                                    var extraFace = new Face(section.MaterialName);
+                                    extraFace.AddIndex(vertexIndex + vtxCounter + 1);
+                                    extraFace.AddIndex(vertexIndex + vtxCounter + 3);
+                                    extraFace.AddIndex(vertexIndex + vtxCounter + 2);
+                                    section.Faces.Add(extraFace);
+                                }
+                                
+                            }
+                            
+                            vertexIndex += polygon.Vertices.Count;
+                            break;
+                        }
+                    }
                 }
             }
 
-            obj.Groups.Add(objGroup);
-        }
-
-        return obj;
-    }
-    
-}
-
-public class OBJ
-{
-    private static readonly IFormatProvider _provider = new CultureInfo("en-US");
-
-    public List<Group> Groups { get; set; } = new List<Group>();
-
-    public OBJ()
-    {
-    }
-    
-    public void Save(string file)
-    {
-        using (StreamWriter sw = File.CreateText(file))
-        {
-            sw.WriteLine("# Wavefront OBJ - File Generated by RanseiLink");
-            sw.WriteLine("# Total-Vertex-Count: {0}", Groups.Sum(x => x.Vertices.Count));
-            sw.WriteLine("# Total-Normal-Count: {0}", Groups.Sum(x => x.Normals.Count));
-            sw.WriteLine("# Total-TextureVertex-Count: {0}", Groups.Sum(x => x.TextureVertices.Count));
-            sw.WriteLine("# Total-Face-Count: {0}", Groups.Sum(x => x.Faces.Count));
-            sw.WriteLine();
-            sw.WriteLine("# Groups:");
-            foreach (var group in Groups)
+            foreach (var dataMaterial in dataModel.Materials)
             {
-                sw.WriteLine("# {0} [ Vertices: {1}, Normals: {2}, TexCoords: {3}, Faces: {4} ]", group.Name, group.Vertices.Count, group.Normals.Count, group.TextureVertices.Count, group.Faces.Count);
+                var material = new Material
+                {
+                    Name = dataMaterial.Name,
+                    Texture = bmd0.TextureData?.Textures.FirstOrDefault(texture => texture.Name.Equals(dataMaterial.TextureName, StringComparison.OrdinalIgnoreCase))
+                };
+                model.Materials.Add(material);
             }
-            
-
-            foreach (var group in Groups)
-            {
-                sw.WriteLine();
-                sw.WriteLine("o {0}", group.Name);
-                sw.WriteLine("# Vertices: {0}, Normals: {1}, TexCoords: {2}, Faces: {3}", group.Vertices.Count, group.Normals.Count, group.TextureVertices.Count, group.Faces.Count);
-
-                foreach (Vector3 vertex in group.Vertices)
-                {
-                    sw.WriteLine(string.Format(_provider, "v {0:0.000000} {1:0.000000} {2:0.000000}", vertex.X, vertex.Y, vertex.Z));
-                }
-
-                foreach (Vector2 texCoord in group.TextureVertices)
-                {
-                    sw.WriteLine(string.Format(_provider, "vt {0:0.000000} {1:0.000000}", texCoord.X, texCoord.Y));
-                }
-
-                foreach (Vector3 normal in group.Normals)
-                {
-                    sw.WriteLine(string.Format(_provider, "vn {0:0.000000} {1:0.000000} {2:0.000000}", normal.X, normal.Y, normal.Z));
-                }
-
-                foreach (var vertexColor in group.VertexColors)
-                {
-                    sw.WriteLine(string.Format(_provider, "vc {0:0.000000} {1:0.000000} {2:0.000000}", (float)vertexColor.R / byte.MaxValue, (float)vertexColor.G / byte.MaxValue, (float)vertexColor.B / byte.MaxValue));
-                }
-
-                string currentMaterial = "";
-                foreach (var face in group.Faces)
-                {
-                    if (currentMaterial != face.MaterialName)
-                    {
-                        currentMaterial = face.MaterialName;
-                        sw.WriteLine("usemtl {0}", face.MaterialName);
-                    }
-
-                    if (!face.VertexIndices.Any())
-                    {
-                        continue;
-                    }
-
-                    bool hasNormalIndices = face.NormalIndices.Any();
-                    bool hasTextCoordIndices = face.TexCoordIndices.Any();
-                    bool hasVertexColorIndices = face.VertexColorIndices.Any();
-
-                    sw.Write("f");
-                    if (hasNormalIndices && hasTextCoordIndices && hasVertexColorIndices)
-                    {
-                        for (int i = 0; i < face.VertexIndices.Count; i++)
-                        {
-                            sw.Write(" {0}/{1}/{2}/{3}", face.VertexIndices[i] + 1, face.TexCoordIndices[i] + 1, face.NormalIndices[i] + 1, face.VertexColorIndices[i] + 1);
-                        }
-                    }
-                    else if (hasNormalIndices && hasTextCoordIndices)
-                    {
-                        for (int i = 0; i < face.VertexIndices.Count; i++)
-                        {
-                            sw.Write(" {0}/{1}/{2}", face.VertexIndices[i] + 1, face.TexCoordIndices[i] + 1, face.NormalIndices[i] + 1);
-                        }
-                    }
-                    else if (hasTextCoordIndices)
-                    {
-                        for (int i = 0; i < face.VertexIndices.Count; i++)
-                        {
-                            sw.Write(" {0}/{1}", face.VertexIndices[i] + 1, face.TexCoordIndices[i] + 1);
-                        }
-                    }
-                    else if (hasNormalIndices)
-                    {
-                        for (int i = 0; i < face.VertexIndices.Count; i++)
-                        {
-                            sw.Write(" {0}//{1}", face.VertexIndices[i] + 1, face.NormalIndices[i] + 1);
-                        }
-                    }
-                    else // only has vertex indices
-                    {
-                        for (int i = 0; i < face.VertexIndices.Count; i++)
-                        {
-                            sw.Write(" {0}", face.VertexIndices[i] + 1);
-                        }
-                    }
-                    sw.WriteLine();
-                }
-            }
+            models.Add(model);
         }
+        return models;
     }
 
-    public class Face
+    public static OBJ ToOBJ(this Model model)
     {
-        public Face(string materialName)
-        {
-            MaterialName = materialName;
-        }
-        public string MaterialName { get; set; }
-        public List<int> VertexIndices { get; set; } = new List<int>();
-        public List<int> NormalIndices { get; set; } = new List<int>();
-        public List<int> TexCoordIndices { get; set; } = new List<int>();
-        public List<int> VertexColorIndices { get; set; } = new List<int>();
-    }
-
-    public class Group
-    {
-        public Group(string name)
-        {
-            Name = name;
-        }
-        public string Name { get; set; }
-
-        /// <summary>
-        /// v: Defines the position of the vertex in three dimensions (x,y,z). Three floating point numbers. Required.
-        /// </summary>
-        public List<Vector3> Vertices { get; set; } = new List<Vector3>();
-
-        /// <summary>
-        /// vn: Vertex normal, a directional vector associated with a vertex, used to facilitate smooth shading. Three floating point numbers. Optional.
-        /// </summary>
-        public List<Vector3> Normals { get; set; } = new List<Vector3>();
-
-        /// <summary>
-        /// vt: Texture coordinates, also known as UV coordinates. Typically two floating point numbers (u, v). These coordinates are used during rendering to determine how to paint the three-dimensional surface with pixels from a 2D texture map, e.g. an image in a format such as PNG. Optional.
-        /// </summary>
-        public List<Vector2> TextureVertices { get; set; } = new List<Vector2>();
-        public List<Rgba32> VertexColors { get; set; } = new List<Rgba32>();
-        public List<Face> Faces { get; set; } = new List<Face>();
+        return new OBJ(model);
     }
 }

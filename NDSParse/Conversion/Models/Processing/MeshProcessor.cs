@@ -1,16 +1,17 @@
 using System.Numerics;
+using NDSParse.Conversion.Models.Mesh;
 using NDSParse.Objects.Exports.Meshes;
 
-namespace NDSParse.Conversion.Models;
+namespace NDSParse.Conversion.Models.Processing;
 
-public class ModelProcessor
+public class MeshProcessor
 {
     public List<Section> Sections = [];
     
     private MDL0Model Model;
     private SimulatedGPU GPU = new();
     
-    public ModelProcessor(MDL0Model model)
+    public MeshProcessor(MDL0Model model)
     {
         Model = model;
         GPU.CurrentMaterial = model.Materials[0];

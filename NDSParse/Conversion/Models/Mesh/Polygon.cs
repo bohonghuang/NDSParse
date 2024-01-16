@@ -1,7 +1,7 @@
 using System.Numerics;
 using SixLabors.ImageSharp.PixelFormats;
 
-namespace NDSParse.Conversion.Models;
+namespace NDSParse.Conversion.Models.Mesh;
 
 public class Polygon
 {
@@ -19,11 +19,4 @@ public enum PolygonType
     QUAD = 1,
     TRI_STRIP = 2,
     QUAD_STRIP = 3,
-}
-
-public class Section
-{
-    public string Name;
-    public string MaterialName;
-    public List<Polygon> Polygons = [];
 }

@@ -5,8 +5,8 @@ namespace NDSParse.Objects.Exports.Meshes;
 
 public class BMD0 : NDSObject
 {
-    public MDL0 Model;
-    public TEX0 TextureData;
+    public MDL0 ModelData;
+    public TEX0? TextureData;
     
     public override string Magic => "BMD0";
 
@@ -21,7 +21,7 @@ public class BMD0 : NDSObject
             switch (ext)
             {
                 case "MDL0":
-                    Model = Construct<MDL0>(reader.Spliced(offset));
+                    ModelData = Construct<MDL0>(reader.Spliced(offset));
                     break;
                 case "TEX0":
                     TextureData = Construct<TEX0>(reader.Spliced(offset));
