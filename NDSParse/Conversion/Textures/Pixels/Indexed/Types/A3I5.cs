@@ -1,6 +1,6 @@
-namespace NDSParse.Conversion.Textures.Pixels.Types;
+namespace NDSParse.Conversion.Textures.Pixels.Indexed.Types;
 
-public class Alpha3Indexed5 : PixelTypeBase
+public class A3I5 : PixelTypeBase
 {
     public override int BitsPerPixel => 8;
 

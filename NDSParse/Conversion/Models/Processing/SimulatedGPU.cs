@@ -7,7 +7,7 @@ public class SimulatedGPU
 {
     public Matrix4x4[] MatrixStack;
     public Matrix4x4 CurrentMatrix = Matrix4x4.Identity;
-    public MDL0Material CurrentMaterial;
+    public MDL0Material? CurrentMaterial;
     
     public SimulatedGPU()
     {

@@ -8,7 +8,11 @@ public class BGR555 : ColorTypeBase
 {
     public override Color Read(BaseReader reader)
     {
-        var value = reader.Read<ushort>();
+        return Read(reader.Read<ushort>());
+    }
+
+    public static Color Read(ushort value)
+    {
         var r = (byte) (((value >> 0) & 0x1F) << 3);
         var g = (byte) (((value >> 5) & 0x1F) << 3);
         var b = (byte) (((value >> 10) & 0x1F) << 3);

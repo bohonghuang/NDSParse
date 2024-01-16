@@ -1,4 +1,3 @@
-using NDSParse.Conversion.Textures;
 using NDSParse.Conversion.Textures.Images.Types;
 using NDSParse.Data;
 
@@ -24,5 +23,5 @@ public class BTX0 : NDSObject
         });
     }
 
-    public IEnumerable<IndexedPaletteImage> GetImages() => TextureData.Textures;
+    public IEnumerable<ImageTypeBase> GetImages() => TextureData.Textures;
 }

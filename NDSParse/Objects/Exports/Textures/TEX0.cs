@@ -5,13 +5,14 @@ using NDSParse.Conversion.Textures.Colors.Types;
 using NDSParse.Conversion.Textures.Images.Types;
 using NDSParse.Conversion.Textures.Palettes;
 using NDSParse.Conversion.Textures.Pixels;
-using NDSParse.Conversion.Textures.Pixels.Types;
+using NDSParse.Conversion.Textures.Pixels.Colored.Types;
+using NDSParse.Conversion.Textures.Pixels.Indexed.Types;
 using NDSParse.Data;
 namespace NDSParse.Objects.Exports.Textures;
 
 public class TEX0 : NDSExport
 {
-    public List<IndexedPaletteImage> Textures = [];
+    public List<ImageTypeBase> Textures = [];
 
     public override string Magic => "TEX0";
 
@@ -79,11 +80,20 @@ public class TEX0 : NDSExport
                 TextureFormat.Color4 => pixelReader.ReadPixels<Indexed2BPP>(textureInfo.Width, textureInfo.Height),
                 TextureFormat.Color16 => pixelReader.ReadPixels<Indexed4BPP>(textureInfo.Width, textureInfo.Height),
                 TextureFormat.Color256 => pixelReader.ReadPixels<Indexed8BPP>(textureInfo.Width, textureInfo.Height),
-                TextureFormat.A3I5 => pixelReader.ReadPixels<Alpha3Indexed5>(textureInfo.Width, textureInfo.Height),
-                TextureFormat.A5I3 => pixelReader.ReadPixels<Alpha5Indexed3>(textureInfo.Width, textureInfo.Height)
+                TextureFormat.A3I5 => pixelReader.ReadPixels<A3I5>(textureInfo.Width, textureInfo.Height),
+                TextureFormat.A5I3 => pixelReader.ReadPixels<A5I3>(textureInfo.Width, textureInfo.Height),
+                TextureFormat.A1BGR5 => pixelReader.ReadPixels<A1BGR555>(textureInfo.Width, textureInfo.Height)
             };
+
+            if (textureInfo.Format.IsIndexed())
+            {
+                Textures.Add(new IndexedPaletteImage(textureInfo.Width, textureInfo.Height, pixels, [palette], textureName, textureInfo.FirstColorIsTransparent));
+            }
+            else
+            {
+                Textures.Add(new ColoredImage(textureInfo.Width, textureInfo.Height, pixels, textureName));
+            }
             
-            Textures.Add(new IndexedPaletteImage(textureInfo.Width, textureInfo.Height, pixels, [palette], textureName, textureInfo.FirstColorIsTransparent));
         }
     }
 }

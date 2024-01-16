@@ -5,6 +5,6 @@ namespace NDSParse.Conversion.Models.Mesh;
 public class Material
 {
     public string Name;
-    public IndexedPaletteImage? Texture;
+    public ImageTypeBase? Texture;
     // TODO more params from MDL0Material (diffuse, ambient, spec, emissive, transforms)
 }

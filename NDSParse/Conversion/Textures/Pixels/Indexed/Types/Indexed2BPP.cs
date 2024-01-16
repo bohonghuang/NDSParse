@@ -1,4 +1,4 @@
-namespace NDSParse.Conversion.Textures.Pixels.Types;
+namespace NDSParse.Conversion.Textures.Pixels.Indexed.Types;
 
 public class Indexed2BPP : PixelTypeBase
 {

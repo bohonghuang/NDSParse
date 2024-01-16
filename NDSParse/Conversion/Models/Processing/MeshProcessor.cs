@@ -14,7 +14,7 @@ public class MeshProcessor
     public MeshProcessor(MDL0Model model)
     {
         Model = model;
-        GPU.CurrentMaterial = model.Materials[0];
+        GPU.CurrentMaterial = model.Materials.FirstOrDefault();
     }
 
     public List<Section> Process()
@@ -32,7 +32,7 @@ public class MeshProcessor
                 break;
 
             case RenderCommandOpCode.BIND_MATERIAL:
-                GPU.CurrentMaterial = Model.Materials[command.Parameters[0]];
+                GPU.CurrentMaterial = Model.Materials[System.Math.Min(command.Parameters[0], Model.Materials.Count - 1)];
                 break;
 
             case RenderCommandOpCode.DRAW_MESH:

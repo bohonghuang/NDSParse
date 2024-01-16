@@ -1,6 +1,6 @@
-namespace NDSParse.Conversion.Textures.Pixels;
+namespace NDSParse.Conversion.Textures.Pixels.Indexed;
 
-public class IndexedPixel
+public class IndexedPixel : IPixel
 {
     public ushort Index;
     public byte Alpha;

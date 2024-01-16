@@ -33,6 +33,11 @@ public static class TextureExtensions
             TextureFormat.A1BGR5 => 0
         };
     }
+    
+    public static bool IsIndexed(this TextureFormat format)
+    {
+        return format != TextureFormat.A1BGR5 && format != TextureFormat.Texel;
+    }
 }
 
 public enum TextureFormat : byte

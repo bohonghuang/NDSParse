@@ -1,16 +1,15 @@
-using NDSParse.Conversion.Textures.Pixels;
-using SixLabors.ImageSharp.PixelFormats;
+using IPixel = NDSParse.Conversion.Textures.Pixels.IPixel;
 
 namespace NDSParse.Conversion.Textures.Images.Types;
 
-public abstract class ImageTypeBase
+public class ImageTypeBase
 {
     public string Name;
     public int Width;
     public int Height;
-    public IndexedPixel[] Pixels;
+    public IPixel[] Pixels;
 
-    public ImageTypeBase(int width, int height, IndexedPixel[] pixels, string name = "")
+    public ImageTypeBase(int width, int height, IPixel[] pixels, string name = "")
     {
         Width = width;
         Height = height;

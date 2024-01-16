@@ -51,7 +51,8 @@ public class MDL0RenderCommand : Deserializable
             RenderCommandOpCode.UNKNOWN_10 => 0,
             RenderCommandOpCode.MTX_SCALE => 0,
             RenderCommandOpCode.UNKNOWN_12 => 0,
-            RenderCommandOpCode.UNKNOWN_13 => 0
+            RenderCommandOpCode.UNKNOWN_13 => 0,
+            _ => 0
         };
     }
 }

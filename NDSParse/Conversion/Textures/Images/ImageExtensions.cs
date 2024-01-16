@@ -1,10 +1,13 @@
 using NDSParse.Conversion.Textures.Images.Types;
 using NDSParse.Conversion.Textures.Palettes;
 using NDSParse.Conversion.Textures.Pixels;
+using NDSParse.Conversion.Textures.Pixels.Colored;
+using NDSParse.Conversion.Textures.Pixels.Indexed;
 using NDSParse.Objects.Rom;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using IPixel = NDSParse.Conversion.Textures.Pixels.IPixel;
 
 namespace NDSParse.Conversion.Textures.Images;
 
@@ -29,26 +32,60 @@ public static class ImageExtensions
         });
     }
     
+    public static Image<Rgba32> ToImage(this ImageTypeBase image)
+    {
+        return image switch
+        {
+            IndexedPaletteImage indexedPaletteImage => ToImage(indexedPaletteImage.Width, indexedPaletteImage.Height, indexedPaletteImage.Pixels, indexedPaletteImage.Palettes, indexedPaletteImage.IsFirstColorTransparent),
+            ColoredImage coloredImage => ToImage(coloredImage.Width, coloredImage.Height, coloredImage.Pixels)
+        };
+    }
+    
     public static Image<Rgba32> ToImage(this IndexedPaletteImage image)
     {
         return ToImage(image.Width, image.Height, image.Pixels, image.Palettes, image.IsFirstColorTransparent);
     }
     
-    public static Image<Rgba32> ToImage(int width, int height, IndexedPixel[] pixels, List<Palette> palettes, bool firstColorIsTransparent = false)
+    public static Image<Rgba32> ToImage(this ColoredImage image)
+    {
+        return ToImage(image.Width, image.Height, image.Pixels, []);
+    }
+    
+    public static Image<Rgba32> ToImage(int width, int height, IPixel[] pixels, List<Palette>? palettes = null, bool firstColorIsTransparent = false)
     {
         var bitmap = new Image<Rgba32>(width, height);
         bitmap.IteratePixels((ref Rgba32 pixel, int index) =>
         {
             var sourcePixel = pixels[index];
-            var color = palettes[sourcePixel.PaletteIndex].Colors[sourcePixel.Index].ToPixel<Rgba32>();
-            if (sourcePixel.Alpha != 255)
-            {
-                color.A = sourcePixel.Alpha;
-            }
 
-            if (sourcePixel.Index == 0 && firstColorIsTransparent)
+            Rgba32 color;
+            switch (sourcePixel)
             {
-                color.A = 0;
+                case IndexedPixel indexedPixel:
+                {
+                    color = palettes![indexedPixel.PaletteIndex].Colors[indexedPixel.Index].ToPixel<Rgba32>();
+                    if (indexedPixel.Alpha != 255)
+                    {
+                        color.A = indexedPixel.Alpha;
+                    }
+
+                    if (indexedPixel.Index == 0 && firstColorIsTransparent)
+                    {
+                        color.A = 0;
+                    }
+                    
+                    break;
+                }
+                case ColoredPixel coloredPixel:
+                {
+                    color = coloredPixel.Color.ToPixel<Rgba32>();
+                    break;
+                }
+                default:
+                {
+                    color = new Rgba32();
+                    break;
+                }
             }
 
             pixel = color;

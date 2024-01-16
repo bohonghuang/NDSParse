@@ -98,6 +98,13 @@ public static class ModelExtensions
         return models;
     }
 
+    public static void SaveToDirectory(this Model model, string path)
+    {
+        Directory.CreateDirectory(path);
+        model.SaveModel(Path.Combine(path, $"{model.Name}.obj"));
+        model.SaveTextures(path);
+    }
+
     public static void SaveTextures(this Model model, string path)
     {
         foreach (var material in model.Materials)
@@ -106,8 +113,8 @@ public static class ModelExtensions
         }
     }
 
-    public static OBJ ToOBJ(this Model model)
+    public static void SaveModel(this Model model, string path)
     {
-        return new OBJ(model);
+        new OBJ(model).Save(path);
     }
 }

@@ -1,13 +1,15 @@
-namespace NDSParse.Conversion.Textures.Pixels.Types;
+using NDSParse.Conversion.Textures.Pixels.Indexed;
+
+namespace NDSParse.Conversion.Textures.Pixels;
 
 public abstract class PixelTypeBase
 {
-    public abstract int BitsPerPixel { get; }
+    public virtual int BitsPerPixel => 8;
 
-    public IndexedPixel[] Decode(byte[] data)
+    public virtual IPixel[] Decode(byte[] data)
     {
         var pixelCount = data.Length * (8 / BitsPerPixel);
-        var pixels = new IndexedPixel[pixelCount];
+        var pixels = new IPixel[pixelCount];
         
         var bitMask = (1 << BitsPerPixel) - 1;
         for (int pixelIndex = 0, bitIndex = 0; pixelIndex < pixelCount; pixelIndex++, bitIndex += BitsPerPixel) 
@@ -19,7 +21,7 @@ public abstract class PixelTypeBase
         return pixels;
     }
 
-    public virtual IndexedPixel ProvidePixel(byte data)
+    public virtual IPixel ProvidePixel(byte data)
     {
         return new IndexedPixel(data);
     }

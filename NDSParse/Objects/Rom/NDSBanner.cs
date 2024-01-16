@@ -3,9 +3,8 @@ using NDSParse.Conversion.Textures.Colors.Types;
 using NDSParse.Conversion.Textures.Images.Types;
 using NDSParse.Conversion.Textures.Palettes;
 using NDSParse.Conversion.Textures.Pixels;
-using NDSParse.Conversion.Textures.Pixels.Types;
+using NDSParse.Conversion.Textures.Pixels.Indexed.Types;
 using NDSParse.Data;
-using SixLabors.ImageSharp.PixelFormats;
 
 namespace NDSParse.Objects.Rom;
 
