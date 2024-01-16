@@ -1,7 +1,9 @@
 using NDSParse.Conversion.Models.Formats;
 using NDSParse.Conversion.Models.Mesh;
 using NDSParse.Conversion.Models.Processing;
+using NDSParse.Conversion.Textures.Images;
 using NDSParse.Objects.Exports.Meshes;
+using SixLabors.ImageSharp;
 
 namespace NDSParse.Conversion.Models;
 
@@ -32,12 +34,11 @@ public static class ModelExtensions
                                 var face = new Face(section.MaterialName);
                                 for (var vtxIdx = 0; vtxIdx < 3; vtxIdx++)
                                 {
-                                    face.AddIndex(vertexIndex + vtxIdx);
+                                    face.AddIndex(vertexIndex);
+                                    vertexIndex++;
                                 }
                                 section.Faces.Add(face);
                             }
-
-                            vertexIndex += polygon.Vertices.Count;
                             break;
                         }
                         case PolygonType.QUAD:
@@ -47,12 +48,11 @@ public static class ModelExtensions
                                 var face = new Face(section.MaterialName);
                                 for (var vtxIdx = 0; vtxIdx < 4; vtxIdx++)
                                 {
-                                    face.AddIndex(vertexIndex + vtxIdx);
+                                    face.AddIndex(vertexIndex);
+                                    vertexIndex++;
                                 }
                                 section.Faces.Add(face);
                             }
-                            
-                            vertexIndex += polygon.Vertices.Count;
                             break;
                         }
                         case PolygonType.TRI_STRIP:
@@ -96,6 +96,14 @@ public static class ModelExtensions
             models.Add(model);
         }
         return models;
+    }
+
+    public static void SaveTextures(this Model model, string path)
+    {
+        foreach (var material in model.Materials)
+        {
+            material.Texture?.ToImage().SaveAsPng(Path.Combine(path, $"{material.Texture?.Name}.png"));
+        }
     }
 
     public static OBJ ToOBJ(this Model model)
