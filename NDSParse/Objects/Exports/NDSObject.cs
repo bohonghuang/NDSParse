@@ -45,6 +45,16 @@ public class NDSObject : Deserializable
         }
     }
 
+    public void ManageSubFiles(BaseReader reader, Action<string, uint> extensionHandler)
+    {
+        foreach (var offset in SubFileOffsets)
+        {
+            reader.Position = offset;
+            var extension = reader.Peek(() => reader.ReadString(4));
+            extensionHandler(extension, offset);
+        }
+    }
+
     public override string ToString()
     {
         return JsonConvert.SerializeObject(this);

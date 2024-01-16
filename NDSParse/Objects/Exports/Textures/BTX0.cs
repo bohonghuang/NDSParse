@@ -14,13 +14,14 @@ public class BTX0 : NDSObject
     public override void Deserialize(BaseReader reader)
     {
         base.Deserialize(reader);
-
-        if (SubFileCount > 1)
+        
+        ManageSubFiles(reader, (ext, offset) =>
         {
-            throw new ParserException("BTX0 should not have more than on sub-file.");
-        }
-
-        TextureData = Construct<TEX0>(reader.Spliced(SubFileOffsets[0]));
+            TextureData = ext switch
+            {
+                "TEX0" => Construct<TEX0>(reader.Spliced(offset))
+            };
+        });
     }
 
     public IEnumerable<IndexedPaletteImage> GetImages() => TextureData.Textures;

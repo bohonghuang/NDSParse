@@ -8,7 +8,7 @@ public class Alpha5Indexed3 : PixelTypeBase
     {
         var pixel = new IndexedPixel();
         pixel.Index = (ushort) (data & 0x7);
-        pixel.Alpha = (byte) ((data >> 3) * 8);
+        pixel.Alpha = (byte) (((data >> 3) << 5) * 8);
         return pixel;
     }
 }

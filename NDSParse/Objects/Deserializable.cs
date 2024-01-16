@@ -13,3 +13,8 @@ public abstract class Deserializable
         return ret;
     }
 }
+
+public abstract class NamedDeserializable : Deserializable
+{
+    public string Name;
+}

@@ -25,7 +25,7 @@ public class NDSHeader
         
         // 0x20
         MakerCode = reader.ReadString(2);
-        DeviceCompatibility = reader.ReadEnum<DeviceCompatibility>();
+        DeviceCompatibility = reader.ReadEnum<DeviceCompatibility, byte>();
         EncryptionSeed = reader.ReadByte();
         CartridgeSize = BaseCartridgeSize * (1 << reader.ReadByte());
         reader.Position += 9; // reserved + region stuff

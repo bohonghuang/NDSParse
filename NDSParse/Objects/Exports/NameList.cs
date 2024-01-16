@@ -59,4 +59,10 @@ public abstract class NameListBase<T> : IEnumerable
     {
         return GetEnumerator();
     }
+
+    public string GetKeyFromValue(T input)
+    {
+        var foundPair = Dict.FirstOrDefault(pair => pair.Value.Equals(input));
+        return foundPair.Key;
+    }
 }

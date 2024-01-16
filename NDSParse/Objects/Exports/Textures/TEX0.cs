@@ -55,7 +55,7 @@ public class TEX0 : NDSExport
     private void ReadTextures(BaseReader reader)
     {
         reader.Position = TextureInfoOffset;
-        var textureInfos = new NameList<TextureInfo>(reader);
+        var textureInfos = new NameList<TEX0Info>(reader);
         
         reader.Position = PaletteInfoOffset;
         var paletteInfos = new NameListUnmanaged<ushort>(reader, () =>
@@ -88,7 +88,7 @@ public class TEX0 : NDSExport
     }
 }
 
-public class TextureInfo : Deserializable
+public class TEX0Info : Deserializable
 {
     public ushort TextureOffset;
     public TextureFormat Format;

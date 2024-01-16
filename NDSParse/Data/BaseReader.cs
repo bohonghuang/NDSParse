@@ -1,5 +1,6 @@
 using System.Text;
 using GenericReader;
+using NDSParse.Extensions;
 
 namespace NDSParse.Data;
 
@@ -27,11 +28,11 @@ public class BaseReader : GenericBufferReader
         Owner = owner ?? this;
     }
 
-    public BaseReader Spliced(uint position, uint? length = null)
+    public BaseReader Spliced(uint? position = null, uint? length = null)
     {
-        Position = position;
+        Position = position ?? Position;
         length ??= (uint) (Size - Position);
-        return new BaseReader(ReadBytes((int) length), owner: Owner);
+        return new BaseReader(ReadBytes((int) length));
     }
     
     public string ReadString(int length, bool unicode = false)
@@ -54,9 +55,9 @@ public class BaseReader : GenericBufferReader
         return ReadString(length, unicode);
     }
     
-    public T ReadEnum<T>() where T : Enum
+    public T ReadEnum<T, K>() where T : Enum where K : unmanaged
     {
-        return (T) (object) ReadByte();
+        return (T) (object) Read<K>();
     }
 
     public byte[] ReadAllBytes()
@@ -79,4 +80,7 @@ public class BaseReader : GenericBufferReader
         func();
         Position = originalPos;
     }
+
+    public float ReadIntAsFloat() => FloatExtensions.ToFloat(Read<int>(), 1, 19, 12);
+    public float ReadShortAsFloat() => FloatExtensions.ToFloat(Read<ushort>(), 1, 3, 12);
 }

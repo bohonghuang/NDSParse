@@ -43,7 +43,7 @@ public class STRM : SoundTypeBase<STRMInfo>
         {
             base.Deserialize(reader);
             
-            Type = reader.ReadEnum<WaveType>();
+            Type = reader.ReadEnum<WaveType, byte>();
             Looping = reader.ReadByte() == 1;
             NumChannels = reader.Read<ushort>();
             SampleRate = reader.Read<ushort>();
