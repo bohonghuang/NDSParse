@@ -128,10 +128,31 @@ public class MDL0Model : NamedDeserializable
         var materialOffsets = new NameListUnmanaged<uint>(reader);
 
         reader.Position = textureOffset;
-        var textureToMaterialIndex = GetMaterialMapping();
+        var textureMappings = new NameList<MaterialMapping>(reader);
+        var matIndexToTexture = new string[materialOffsets.Count];
+        for (var i = 0; i < textureMappings.Count; i++)
+        {
+            var (name, mappings) = textureMappings.Get(i);
+            reader.Position = mappings.Offset;
+            for (var n = 0; n < mappings.NumMaterials; n++)
+            {
+                var matIdx = reader.ReadByte();
+                matIndexToTexture[matIdx] = name;
+            }
+        }
         
         reader.Position = paletteOffset;
-        var paletteToMaterialIndex = GetMaterialMapping();
+        var paletteMappings = new NameList<MaterialMapping>(reader);
+        var matIndexToPalette = new string[materialOffsets.Count];
+        for (var i = 0; i < paletteMappings.Count; i++)
+        {
+            var (name, mappings) = paletteMappings.Get(i);
+            for (var n = 0; n < mappings.NumMaterials; n++)
+            {
+                var matIdx = reader.ReadByte();
+                matIndexToPalette[matIdx] = name;
+            }
+        }
 
         for (byte matIndex = 0; matIndex < materialOffsets.Count; matIndex++)
         {
@@ -140,24 +161,10 @@ public class MDL0Model : NamedDeserializable
             
             var material = Construct<MDL0Material>(reader);
             material.Name = name;
-            material.TextureName = textureToMaterialIndex.GetKeyFromValue(matIndex);
-            material.PaletteName = paletteToMaterialIndex.GetKeyFromValue(matIndex);
+            material.TextureName = matIndexToTexture[matIndex];
+            material.PaletteName = matIndexToPalette[matIndex];
             Materials.Add(material);
         }
-
-        return;
-
-        NameListUnmanaged<byte> GetMaterialMapping() =>
-            new(reader, () =>
-            {
-                var offset = reader.Read<ushort>();
-                reader.Position += 2; // num mats + bounds
-                return reader.Peek(() =>
-                {
-                    reader.Position = offset;
-                    return reader.ReadByte();
-                });
-            });
     }
 
     private void ReadPolygons(BaseReader reader)

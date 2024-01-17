@@ -94,3 +94,17 @@ public enum MaterialFlag : ushort
     TEXPLTTBASE = 4096, // 0x1000
     EFFECT_MATRIX = 8192 // 0x2000 
 }
+
+public class MaterialMapping : Deserializable
+{
+    public ushort Offset;
+    public byte NumMaterials;
+    public byte Bound;
+
+    public override void Deserialize(BaseReader reader)
+    {
+        Offset = reader.Read<ushort>();
+        NumMaterials = reader.ReadByte();
+        Bound = reader.ReadByte();
+    }
+}
