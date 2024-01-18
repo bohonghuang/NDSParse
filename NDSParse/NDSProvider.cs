@@ -95,13 +95,13 @@ public class NDSProvider
         return loaded;
     }
     
-    public T LoadObject<T>(string path) where T : NDSObject, new() => LoadObject<T>(Files[path]);
+    public T LoadObject<T>(string path) where T : Deserializable, new() => LoadObject<T>(Files[path]);
 
-    public T LoadObject<T>(GameFile file) where T : NDSObject, new() => Deserializable.Construct<T>(CreateReader(file));
+    public T LoadObject<T>(GameFile file) where T : Deserializable, new() => Deserializable.Construct<T>(CreateReader(file));
     
-    public bool TryLoadObject<T>(string path, out T data) where T : NDSObject, new() => TryLoadObject(Files[path], out data);
+    public bool TryLoadObject<T>(string path, out T data) where T : Deserializable, new() => TryLoadObject(Files[path], out data);
     
-    public bool TryLoadObject<T>(GameFile file, out T data) where T : NDSObject, new()
+    public bool TryLoadObject<T>(GameFile file, out T data) where T : Deserializable, new()
     {
         data = null!;
         data = LoadObject<T>(file);

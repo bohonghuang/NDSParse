@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NDSParse", "NDSParse\NDSPar
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NDSParse-Example", "NDSParse-Example\NDSParse-Example.csproj", "{B354A070-2543-43D1-8F2D-4DF605638DAE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NDSParse.Games", "NDSParse.Games\NDSParse.Games.csproj", "{00F840FA-5C42-4AB6-A928-04A3B9F822F2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{B354A070-2543-43D1-8F2D-4DF605638DAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B354A070-2543-43D1-8F2D-4DF605638DAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B354A070-2543-43D1-8F2D-4DF605638DAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00F840FA-5C42-4AB6-A928-04A3B9F822F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00F840FA-5C42-4AB6-A928-04A3B9F822F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00F840FA-5C42-4AB6-A928-04A3B9F822F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00F840FA-5C42-4AB6-A928-04A3B9F822F2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
