@@ -3,14 +3,17 @@ using NDSParse.Conversion.Models.Mesh;
 using NDSParse.Conversion.Models.Processing;
 using NDSParse.Conversion.Textures.Images;
 using NDSParse.Objects.Exports.Meshes;
+using NDSParse.Objects.Exports.Textures;
 using SixLabors.ImageSharp;
 
 namespace NDSParse.Conversion.Models;
 
 public static class ModelExtensions
 {
-    public static List<Model> ExtractModels(this BMD0 bmd0)
+    public static List<Model> ExtractModels(this BMD0 bmd0, TEX0? textureReference = null)
     {
+        textureReference ??= bmd0.TextureData;
+        
         var models = new List<Model>();
         foreach (var dataModel in bmd0.ModelData.Models)
         {
@@ -46,11 +49,21 @@ public static class ModelExtensions
                             for (var vtxCounter = 0; vtxCounter < polygon.Vertices.Count; vtxCounter += 4)
                             {
                                 var face = new Face(section.MaterialName);
+                                var indices = new int[4];
                                 for (var vtxIdx = 0; vtxIdx < 4; vtxIdx++)
                                 {
-                                    face.AddIndex(vertexIndex);
+                                    indices[vtxIdx] = vertexIndex;
                                     vertexIndex++;
                                 }
+                                
+                                face.AddIndex(indices[0]);
+                                face.AddIndex(indices[1]);
+                                face.AddIndex(indices[2]);
+                                
+                                face.AddIndex(indices[2]);
+                                face.AddIndex(indices[3]);
+                                face.AddIndex(indices[0]);
+                                
                                 section.Faces.Add(face);
                             }
                             break;
@@ -89,7 +102,7 @@ public static class ModelExtensions
                 var material = new Material
                 {
                     Name = dataMaterial.Name,
-                    Texture = bmd0.TextureData?.Textures.FirstOrDefault(texture => texture.Name.Equals(dataMaterial.TextureName, StringComparison.OrdinalIgnoreCase))
+                    Texture = textureReference?.Textures.FirstOrDefault(texture => texture.Name.Equals(dataMaterial.TextureName, StringComparison.OrdinalIgnoreCase))
                 };
                 model.Materials.Add(material);
             }
