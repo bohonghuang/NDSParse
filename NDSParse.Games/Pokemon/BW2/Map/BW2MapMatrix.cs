@@ -18,17 +18,24 @@ public class BW2MapMatrix : Deserializable
         Height = reader.Read<ushort>();
 
         var matrixCount = Width * Height;
-
-        for (var matrixIndex = 0; matrixIndex < matrixCount; matrixIndex++)
+        for (uint matrixIndex = 0; matrixIndex < matrixCount; matrixIndex++)
         {
-            MapIndices.Add(Construct<MapMatrixEntry>(reader));
+            var entry = Construct<MapMatrixEntry>(reader);
+            entry.Y = matrixIndex / Width;
+            entry.X = matrixIndex - entry.Y * Width;
+            entry.Index = matrixIndex;
+            MapIndices.Add(entry);
         }
 
         if (hasMapHeaders)
         {
-            for (var matrixIndex = 0; matrixIndex < matrixCount; matrixIndex++)
+            for (uint matrixIndex = 0; matrixIndex < matrixCount; matrixIndex++)
             {
-                MapHeaderIndices.Add(Construct<MapMatrixEntry>(reader));
+                var entry = Construct<MapMatrixEntry>(reader);
+                entry.Y = matrixIndex / Width;
+                entry.X = matrixIndex - entry.Y * Width;
+                entry.Index = matrixIndex;
+                MapHeaderIndices.Add(entry);
             }
         }
         
@@ -39,6 +46,9 @@ public class MapMatrixEntry : Deserializable
 {
     public bool IsValid => Value != 0xFFFFFFFF;
     public uint Value;
+    public uint X;
+    public uint Y;
+    public uint Index;
     public override void Deserialize(BaseReader reader)
     {
         Value = reader.Read<uint>();
