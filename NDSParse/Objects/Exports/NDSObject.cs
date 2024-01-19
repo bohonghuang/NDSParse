@@ -10,6 +10,7 @@ public class NDSObject : Deserializable
     public string Path => File?.Path ?? string.Empty;
     public FileBase? File;
     
+    public string ReadMagic;
     public ushort Version;
     public uint FileSize;
     public ushort HeaderSize;
@@ -26,10 +27,10 @@ public class NDSObject : Deserializable
             File = assetReader.File;
         }
         
-        var magic = reader.ReadString(4);
-        if (magic != Magic)
+        ReadMagic = reader.ReadString(4);
+        if (ReadMagic != Magic)
         {
-            throw new ParserException($"{Magic} has invalid magic: {magic}");
+            throw new ParserException($"{Magic} has invalid magic: {ReadMagic}");
         }
 
         var bom = reader.Read<ushort>();
@@ -43,6 +44,26 @@ public class NDSObject : Deserializable
         {
             SubFileOffsets = reader.ReadArray<uint>(SubFileCount);
         }
+    }
+
+    public static NDSObject DeserializeGenericHeader(BaseReader reader, bool hasSubfiles = false)
+    {
+        var obj = new NDSObject();
+        obj.ReadMagic = reader.ReadString(4);
+
+        var bom = reader.Read<ushort>();
+        obj.Version = reader.Read<ushort>();
+        if (bom == 0xFFFE) obj.Version = (ushort) ((obj.Version & 0xFF) << 8 | obj.Version >> 8);
+        obj.FileSize = reader.Read<uint>();
+        obj.HeaderSize = reader.Read<ushort>();
+        obj.SubFileCount = reader.Read<ushort>();
+
+        if (hasSubfiles)
+        {
+            obj.SubFileOffsets = reader.ReadArray<uint>(obj.SubFileCount);
+        }
+
+        return obj;
     }
 
     public void ManageSubFiles(BaseReader reader, Action<string, uint> extensionHandler)
