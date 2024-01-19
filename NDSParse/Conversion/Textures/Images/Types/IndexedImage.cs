@@ -5,7 +5,7 @@ namespace NDSParse.Conversion.Textures.Images.Types;
 
 public class IndexedImage : ImageTypeBase
 {
-    public IndexedImage(int width, int height, IPixel[] pixels, string name = "") : base(width, height, pixels, name)
+    public IndexedImage(IPixel[] pixels, ImageMetaData metaData, string name = "") : base(pixels, metaData, name)
     {
         
     }

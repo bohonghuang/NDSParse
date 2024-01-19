@@ -41,7 +41,7 @@ public class NDSBanner
         PixelSwizzler.UnSwizzle(ref pixels, IconWidth);
         var palette = new Palette(reader.ReadColors<BGR555>(16));
 
-        return new IndexedPaletteImage(IconWidth, IconHeight, pixels, [palette]);
+        return new IndexedPaletteImage(pixels, [palette], new ImageMetaData(IconWidth, IconHeight));
     }
 
 }
@@ -64,7 +64,7 @@ public class AnimatedBannerIcon
             var pixels = reader.ReadPixels<Indexed4BPP>(NDSBanner.IconWidth, NDSBanner.IconHeight);
             PixelSwizzler.UnSwizzle(ref pixels, NDSBanner.IconWidth);
             
-            Images.Add(new IndexedImage(NDSBanner.IconWidth, NDSBanner.IconHeight, pixels));
+            Images.Add(new IndexedImage(pixels, new ImageMetaData(NDSBanner.IconWidth, NDSBanner.IconHeight)));
         }
         
         for (var i = 0; i < AnimatedImageCount; i++)

@@ -5,15 +5,34 @@ namespace NDSParse.Conversion.Textures.Images.Types;
 public class ImageTypeBase
 {
     public string Name;
-    public int Width;
-    public int Height;
+    public ImageMetaData MetaData;
     public IPixel[] Pixels;
 
-    public ImageTypeBase(int width, int height, IPixel[] pixels, string name = "")
+    public ImageTypeBase(IPixel[] pixels, ImageMetaData metaData, string name = "")
+    {
+        Pixels = pixels;
+        Name = name;
+        MetaData = metaData;
+    }
+}
+
+public class ImageMetaData
+{
+    public int Width;
+    public int Height;
+    public bool RepeatU;
+    public bool RepeatV;
+    public bool FlipU;
+    public bool FlipV;
+
+    public ImageMetaData(int width, int height, bool repeatU = false, bool repeatV = false, bool flipU = false, bool flipV = false)
     {
         Width = width;
         Height = height;
-        Pixels = pixels;
-        Name = name;
+        RepeatU = repeatU;
+        RepeatV = repeatV;
+        FlipU = flipU;
+        FlipV = flipV;
     }
+    
 }

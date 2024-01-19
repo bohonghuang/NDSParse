@@ -36,24 +36,24 @@ public static class ImageExtensions
     {
         return image switch
         {
-            IndexedPaletteImage indexedPaletteImage => ToImage(indexedPaletteImage.Width, indexedPaletteImage.Height, indexedPaletteImage.Pixels, indexedPaletteImage.Palettes, indexedPaletteImage.IsFirstColorTransparent),
-            ColoredImage coloredImage => ToImage(coloredImage.Width, coloredImage.Height, coloredImage.Pixels)
+            IndexedPaletteImage indexedPaletteImage => indexedPaletteImage.ToImage(),
+            ColoredImage coloredImage => coloredImage.ToImage()
         };
     }
     
     public static Image<Rgba32> ToImage(this IndexedPaletteImage image)
     {
-        return ToImage(image.Width, image.Height, image.Pixels, image.Palettes, image.IsFirstColorTransparent);
+        return ToImage(image.Pixels, image.MetaData, image.Palettes, image.IsFirstColorTransparent);
     }
     
     public static Image<Rgba32> ToImage(this ColoredImage image)
     {
-        return ToImage(image.Width, image.Height, image.Pixels, []);
+        return ToImage(image.Pixels, image.MetaData);
     }
     
-    public static Image<Rgba32> ToImage(int width, int height, IPixel[] pixels, List<Palette>? palettes = null, bool firstColorIsTransparent = false)
+    public static Image<Rgba32> ToImage(IPixel[] pixels, ImageMetaData metaData, List<Palette>? palettes = null, bool firstColorIsTransparent = false)
     {
-        var bitmap = new Image<Rgba32>(width, height);
+        var bitmap = new Image<Rgba32>(metaData.Width, metaData.Height);
         bitmap.IteratePixels((ref Rgba32 pixel, int index) =>
         {
             var sourcePixel = pixels[index];
@@ -103,7 +103,7 @@ public static class ImageExtensions
         foreach (var key in icon.Keys)
         {
             var targetImage = icon.Images[key.BitmapIndex];
-            var image = ToImage(targetImage.Width, targetImage.Height, targetImage.Pixels, [icon.Palettes[key.PaletteIndex]]);
+            var image = ToImage(targetImage.Pixels, targetImage.MetaData, [icon.Palettes[key.PaletteIndex]]);
             image.Mutate(ctx =>
             {
                 if (key.FlipHorizontal) ctx.Flip(FlipMode.Horizontal);

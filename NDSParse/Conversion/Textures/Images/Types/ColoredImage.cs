@@ -5,7 +5,7 @@ namespace NDSParse.Conversion.Textures.Images.Types;
 
 public class ColoredImage : ImageTypeBase
 {
-    public ColoredImage(int width, int height, IPixel[] pixels, string name = "") : base(width, height, pixels, name)
+    public ColoredImage(IPixel[] pixels, ImageMetaData metaData, string name = "") : base(pixels, metaData, name)
     {
         
     }

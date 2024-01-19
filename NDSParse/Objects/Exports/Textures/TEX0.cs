@@ -69,7 +69,7 @@ public class TEX0 : NDSExport
         for (var textureIndex = 0; textureIndex < textureInfos.Count; textureIndex++)
         {
             var (textureName, textureInfo) = textureInfos.Get(textureIndex);
-            var (paletteName, paletteOffset) = paletteInfos.Dict.FirstOrDefault(pair => pair.Key.Contains(textureName), paletteInfos.Dict.First());
+            var (paletteName, paletteOffset) = paletteInfos.Dict.FirstOrDefault(pair => pair.Key.Equals(textureName + "_pl"), paletteInfos.Dict.First());
             
             var paletteReader = new DataBlock(reader, (int) (paletteOffset * 8 + PaletteDataOffset), textureInfo.Format.PaletteSize()).CreateReader();
             var palette = new Palette(paletteReader.ReadColors<BGR555>(paletteReader.Size / 2), paletteName);
@@ -87,11 +87,11 @@ public class TEX0 : NDSExport
 
             if (textureInfo.Format.IsIndexed())
             {
-                Textures.Add(new IndexedPaletteImage(textureInfo.Width, textureInfo.Height, pixels, [palette], textureName, textureInfo.FirstColorIsTransparent));
+                Textures.Add(new IndexedPaletteImage(pixels, [palette], textureInfo.CreateMetaData(), textureName, textureInfo.FirstColorIsTransparent));
             }
             else
             {
-                Textures.Add(new ColoredImage(textureInfo.Width, textureInfo.Height, pixels, textureName));
+                Textures.Add(new ColoredImage(pixels, textureInfo.CreateMetaData(), textureName));
             }
             
         }
@@ -105,12 +105,20 @@ public class TEX0Info : Deserializable
     public int Height;
     public int Width;
     public bool FirstColorIsTransparent;
+    public bool RepeatU;
+    public bool FlipU;
+    public bool RepeatV;
+    public bool FlipV;
 
     public override void Deserialize(BaseReader reader)
     {
         TextureOffset = reader.Read<ushort>();
 
         var flags = reader.Read<ushort>();
+        RepeatU = ((flags >> 0) & 1) == 1;
+        FlipU = ((flags >> 1) & 1) == 1;
+        RepeatU = ((flags >> 8) & 1) == 1;
+        FlipU = ((flags >> 9) & 1) == 1;
         FirstColorIsTransparent = ((flags >> 13) & 1) != 0;
         Format = (TextureFormat) ((flags >> 10) & 7);
         Height = 8 << ((flags >> 7) & 7);
@@ -118,4 +126,6 @@ public class TEX0Info : Deserializable
 
         reader.Position += 4;
     }
+
+    public ImageMetaData CreateMetaData() => new(Width, Height, RepeatU, RepeatV, FlipU, FlipV);
 }
