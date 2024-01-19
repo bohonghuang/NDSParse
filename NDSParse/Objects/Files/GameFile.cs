@@ -17,9 +17,9 @@ public class GameFile : FileBase
     public GameFile Copy(string? path = null) => new(path ?? Path, Data);
     
 
-    public T Load<T>() where T : NDSObject, new() => Deserializable.Construct<T>(CreateReader());
+    public T Load<T>() where T : Deserializable, new() => Deserializable.Construct<T>(CreateReader());
     
-    public bool TryLoad<T>(out T data) where T : NDSObject, new()
+    public bool TryLoad<T>(out T data) where T : Deserializable, new()
     {
         data = null!;
         try
