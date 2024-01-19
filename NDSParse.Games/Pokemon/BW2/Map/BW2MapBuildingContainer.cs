@@ -1,3 +1,4 @@
+using System.Numerics;
 using NDSParse.Data;
 using NDSParse.Objects;
 using NDSParse.Objects.Exports;
@@ -73,6 +74,8 @@ public class BW2MapBuildingContainer : Deserializable
 public class BW2MapBuildingHeader : Deserializable
 {
     public ushort ID;
+    public short DoorID;
+    public Vector3 DoorLocation = Vector3.Zero;
 
     public List<NDSObject> GenericHeaders = []; // todo actually serialize, just placeholder
     
@@ -82,7 +85,15 @@ public class BW2MapBuildingHeader : Deserializable
     public override void Deserialize(BaseReader reader)
     {
         ID = reader.Read<ushort>();
-        reader.Position += 17; // unknown rn
+        
+        reader.Position += 2;
+        
+        DoorID = reader.Read<short>();
+        DoorLocation.X = reader.Read<short>();
+        DoorLocation.Y = reader.Read<short>();
+        DoorLocation.Z = reader.Read<short>();
+        
+        reader.Position += 7; // unknown rn
 
         var subFileOffsets = new List<uint>();
         var filesInHeader = reader.ReadByte();
