@@ -102,7 +102,11 @@ public static class ModelExtensions
                 var material = new Material
                 {
                     Name = dataMaterial.Name,
-                    Texture = textureReference?.Textures.FirstOrDefault(texture => texture.Name.Equals(dataMaterial.TextureName, StringComparison.OrdinalIgnoreCase))
+                    Texture = textureReference?.Textures.FirstOrDefault(texture => texture.Name.Equals(dataMaterial.TextureName, StringComparison.OrdinalIgnoreCase)),
+                    FlipU = dataMaterial.FlipU,
+                    FlipV = dataMaterial.FlipV,
+                    RepeatU = dataMaterial.RepeatU,
+                    RepeatV = dataMaterial.RepeatV
                 };
                 model.Materials.Add(material);
             }

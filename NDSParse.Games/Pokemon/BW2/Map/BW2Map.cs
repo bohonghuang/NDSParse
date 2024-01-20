@@ -23,7 +23,7 @@ public class BW2Map : Deserializable
 
         switch (identifier)
         {
-            case "GN": // does not contain move permissions
+            case "NG": // does not contain move permissions
             {
                 BuildingOffset = reader.Read<uint>();
                 reader.Position += sizeof(uint); // end offset?

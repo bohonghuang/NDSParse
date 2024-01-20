@@ -13,7 +13,8 @@ public class MDL0Material : NamedDeserializable
     public int SpecularEmissive;
     public uint PolyAttr;
     public uint PolyAttrMask;
-    public uint TextureImageParam;
+    public ushort TextureVRAMOffset;
+    public ushort TextureImageParam;
     public uint TextureImageParamMask;
     public ushort TexturePaletteBase;
     public MaterialFlag Flag;
@@ -29,6 +30,11 @@ public class MDL0Material : NamedDeserializable
     public uint TransV;
     public uint[] EffectMatrix = [];
     
+    public bool RepeatU;
+    public bool RepeatV;
+    public bool FlipU;
+    public bool FlipV;
+    
     public override void Deserialize(BaseReader reader)
     {
         Tag = reader.Read<ushort>();
@@ -37,8 +43,13 @@ public class MDL0Material : NamedDeserializable
         SpecularEmissive = reader.Read<int>();
         PolyAttr = reader.Read<uint>();
         PolyAttrMask = reader.Read<uint>();
-        TextureImageParam = reader.Read<uint>();
-        TextureImageParam = reader.Read<uint>();
+        TextureVRAMOffset = reader.Read<ushort>();
+        TextureImageParam = reader.Read<ushort>();
+        RepeatU = ((TextureImageParam >> 0) & 1) == 1;
+        RepeatV = ((TextureImageParam >> 1) & 1) == 1;
+        FlipU = ((TextureImageParam >> 2) & 1) == 1;
+        FlipV = ((TextureImageParam >> 3) & 1) == 1;
+        TextureImageParamMask = reader.Read<uint>();
         TexturePaletteBase = reader.Read<ushort>();
         Flag = (MaterialFlag) (~reader.Read<ushort>() & 0x3FFF) ^ MaterialFlag.EFFECT_MATRIX;
         Width = reader.Read<ushort>();

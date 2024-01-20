@@ -106,8 +106,8 @@ public class TEX0Info : Deserializable
     public int Width;
     public bool FirstColorIsTransparent;
     public bool RepeatU;
-    public bool FlipU;
     public bool RepeatV;
+    public bool FlipU;
     public bool FlipV;
 
     public override void Deserialize(BaseReader reader)
@@ -116,9 +116,9 @@ public class TEX0Info : Deserializable
 
         var flags = reader.Read<ushort>();
         RepeatU = ((flags >> 0) & 1) == 1;
-        FlipU = ((flags >> 1) & 1) == 1;
-        RepeatU = ((flags >> 8) & 1) == 1;
-        FlipU = ((flags >> 9) & 1) == 1;
+        RepeatV = ((flags >> 1) & 1) == 1;
+        FlipU = ((flags >> 2) & 1) == 1;
+        FlipV = ((flags >> 3) & 1) == 1;
         FirstColorIsTransparent = ((flags >> 13) & 1) != 0;
         Format = (TextureFormat) ((flags >> 10) & 7);
         Height = 8 << ((flags >> 7) & 7);
