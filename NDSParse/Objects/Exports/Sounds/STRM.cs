@@ -14,8 +14,8 @@ public class STRM : SoundTypeBase<STRMInfo>
     {
         base.Deserialize(reader);
 
-        Header = Construct<HEAD>(reader);
-        Data = Construct<DATA>(reader);
+        Header = ConstructExport<HEAD>(reader);
+        Data = ConstructExport<DATA>(reader);
 
     }
     

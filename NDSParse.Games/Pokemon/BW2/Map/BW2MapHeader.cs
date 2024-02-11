@@ -47,7 +47,9 @@ public class MapHeader : Deserializable
     public ushort MapID;
     public ushort ParentMapID;
     public byte NameIndex;
-    // sizeof(byte) * 5 + sizeof(ushort) + sizeof(byte) * 2 + sizeof(uint) * 3
+    public byte Flags;
+    // sizeof(byte) * 4
+    // sizeof(ushort) + sizeof(byte) * 2 + sizeof(uint) * 3
     public override void Deserialize(BaseReader reader)
     {
         MapType = reader.ReadByte();
@@ -65,7 +67,8 @@ public class MapHeader : Deserializable
         MapID = reader.Read<ushort>();
         ParentMapID = reader.Read<ushort>();
         NameIndex = reader.ReadByte();
-        reader.Position += 5;
+        reader.Position += 4;
+        Flags = reader.ReadByte();
         reader.Position += sizeof(ushort);
         reader.Position += 2;
         reader.Position += sizeof(uint) * 3;

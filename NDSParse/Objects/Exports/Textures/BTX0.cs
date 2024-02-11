@@ -18,7 +18,7 @@ public class BTX0 : NDSObject
         {
             TextureData = ext switch
             {
-                "TEX0" => Construct<TEX0>(reader.Spliced(offset))
+                "TEX0" => ConstructExport<TEX0>(reader.Spliced(offset))
             };
         });
     }

@@ -37,10 +37,10 @@ public class SDAT : NDSObject
         FilesOffset = reader.Read<uint>();
         FilesSize = reader.Read<uint>();
 
-        Symbols = Construct<SYMB>(reader.Spliced(SymbOffset, SymbSize));
-        Info = Construct<INFO>(reader.Spliced(InfoOffset, InfoSize));
-        FAT = Construct<FAT>(reader.Spliced(FATOffset, FATSize));
-        FileInfo = Construct<FILE>(reader.Spliced(FilesOffset, FilesSize));
+        Symbols = ConstructExport<SYMB>(reader.Spliced(SymbOffset, SymbSize));
+        Info = ConstructExport<INFO>(reader.Spliced(InfoOffset, InfoSize));
+        FAT = ConstructExport<FAT>(reader.Spliced(FATOffset, FATSize));
+        FileInfo = ConstructExport<FILE>(reader.Spliced(FilesOffset, FilesSize));
 
         Streams = LoadFiles<STRM, STRMInfo>(SoundFileType.Stream);
     }

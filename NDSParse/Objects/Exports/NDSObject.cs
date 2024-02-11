@@ -11,7 +11,7 @@ public class NDSObject : Deserializable
     public FileBase? File;
     
     public string ReadMagic;
-    public ushort Version;
+    public Version Version;
     public uint FileSize;
     public ushort HeaderSize;
     public ushort SubFileCount;
@@ -22,11 +22,6 @@ public class NDSObject : Deserializable
     
     public override void Deserialize(BaseReader reader)
     {
-        if (reader is AssetReader assetReader)
-        {
-            File = assetReader.File;
-        }
-        
         ReadMagic = reader.ReadString(4);
         if (ReadMagic != Magic)
         {
@@ -34,8 +29,9 @@ public class NDSObject : Deserializable
         }
 
         var bom = reader.Read<ushort>();
-        Version = reader.Read<ushort>();
-        if (bom == 0xFFFE) Version = (ushort) ((Version & 0xFF) << 8 | Version >> 8);
+        var version = reader.Read<ushort>();
+        if (bom == 0xFFFE) version = (ushort) ((version & 0xFF) << 8 | version >> 8);
+        Version = new Version(version >> 8, version & 0xFF);
         FileSize = reader.Read<uint>();
         HeaderSize = reader.Read<ushort>();
         SubFileCount = reader.Read<ushort>();
@@ -43,6 +39,11 @@ public class NDSObject : Deserializable
         if (ContainsSubfiles)
         {
             SubFileOffsets = reader.ReadArray<uint>(SubFileCount);
+        }
+        
+        if (reader is AssetReader assetReader)
+        {
+            File = assetReader.File;
         }
     }
 
@@ -52,8 +53,9 @@ public class NDSObject : Deserializable
         obj.ReadMagic = reader.ReadString(4);
 
         var bom = reader.Read<ushort>();
-        obj.Version = reader.Read<ushort>();
-        if (bom == 0xFFFE) obj.Version = (ushort) ((obj.Version & 0xFF) << 8 | obj.Version >> 8);
+        var version = reader.Read<ushort>();
+        if (bom == 0xFFFE) version = (ushort) ((version & 0xFF) << 8 | version >> 8);
+        obj.Version = new Version(version >> 8, version & 0xFF);
         obj.FileSize = reader.Read<uint>();
         obj.HeaderSize = reader.Read<ushort>();
         obj.SubFileCount = reader.Read<ushort>();
@@ -74,6 +76,22 @@ public class NDSObject : Deserializable
             var extension = reader.Peek(() => reader.ReadString(4));
             extensionHandler(extension, offset);
         }
+    }
+
+    public T ConstructExport<T>(BaseReader reader) where T : NDSExport, new()
+    {
+        var asset = Construct<T>(reader, asset => asset.Parent = this);
+        return asset;
+    }
+    
+    public T ConstructExport<T>(BaseReader reader, Action<T> dataModifier) where T : NDSExport, new()
+    {
+        var asset = Construct<T>(reader, asset =>
+        {
+            asset.Parent = this;
+            dataModifier(asset);
+        });
+        return asset;
     }
 
     public override string ToString()

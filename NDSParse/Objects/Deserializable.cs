@@ -12,6 +12,14 @@ public abstract class Deserializable
         ret.Deserialize(reader);
         return ret;
     }
+    
+    public static T Construct<T>(BaseReader reader, Action<T> dataModifier) where T : Deserializable, new()
+    {
+        var ret = new T();
+        dataModifier.Invoke(ret);
+        ret.Deserialize(reader);
+        return ret;
+    }
 }
 
 public abstract class NamedDeserializable : Deserializable

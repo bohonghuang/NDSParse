@@ -7,9 +7,10 @@ public class Palette
     public List<Color> Colors;
     public bool IsBlank => Colors.All(color => color is { R: 0, G: 0, B: 0 });
 
-    public Palette(IEnumerable<Color> colors, string name = "")
+    public Palette(IEnumerable<Color>? colors = null, string name = "")
     {
-        Colors = new List<Color>(colors);
+        Colors = colors is not null ? [..colors] : [];
         Name = name;
     }
+    
 }

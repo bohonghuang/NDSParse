@@ -3,16 +3,18 @@ using Newtonsoft.Json;
 
 namespace NDSParse.Objects.Exports;
 
+// todo refactor to get auto loaded by all nds object
 public class NDSExport : Deserializable
 {
     public uint FileSize;
+    public long DataSize;
+    public NDSObject Parent;
 
     public virtual string Magic => string.Empty;
 
     public const int HEADER_SIZE = 8;
 
     private long Offset;
-    private long Size;
     
     public override void Deserialize(BaseReader reader)
     {
@@ -24,17 +26,17 @@ public class NDSExport : Deserializable
 
         FileSize = reader.Read<uint>();
         Offset = reader.Position;
-        Size = FileSize - HEADER_SIZE;
+        DataSize = FileSize - HEADER_SIZE;
     }
 
     protected BaseReader CreateDataReader(BaseReader reader)
     {
-        return reader.Spliced((uint) Offset, (uint) Size);
+        return reader.Spliced((uint) Offset, (uint) DataSize);
     }
 
     protected DataBlock CreateDataBlock(BaseReader reader)
     {
-        return new DataBlock(reader, (int) Offset, (int) Size);
+        return new DataBlock(reader, (int) Offset, (int) DataSize);
     }
     
     public override string ToString()

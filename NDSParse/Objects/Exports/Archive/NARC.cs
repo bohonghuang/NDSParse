@@ -13,9 +13,9 @@ public class NARC : NDSObject
     {
         base.Deserialize(reader);
         
-        var fat = Construct<BTAF>(reader);
-        var fnt = Construct<BTNF>(reader);
-        var gimf = Construct<GMIF>(reader);
+        var fat = ConstructExport<BTAF>(reader);
+        var fnt = ConstructExport<BTNF>(reader);
+        var gimf = ConstructExport<GMIF>(reader);
         
         // technicaly gmif data but i would rather control it out here
         var dataOffset = (int) reader.Position;

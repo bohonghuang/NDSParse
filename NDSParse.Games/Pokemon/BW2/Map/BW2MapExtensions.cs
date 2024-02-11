@@ -42,9 +42,10 @@ public static class BW2MapExtensions
             public byte Rotation; 
             public Model Model;
             public Model DoorModel;
-            public Vector3 DoorPos; 
+            public Vector3 DoorPos;
+            public bool IsBuilding;
 
-            public Actor(Model model, Model? doorModel = null, Vector3? doorPos = null, byte rotation = 0, Vector3? vec = null, Vector3? flag =null)
+            public Actor(Model model, Model? doorModel = null, Vector3? doorPos = null, byte rotation = 0, Vector3? vec = null, Vector3? flag = null, bool isBuilding = false)
             {
                 Model = model;
                 Pos = vec ?? Vector3.Zero;
@@ -52,6 +53,7 @@ public static class BW2MapExtensions
                 Rotation = rotation;
                 DoorModel = doorModel;
                 DoorPos = doorPos ?? Vector3.Zero;
+                IsBuilding = isBuilding;
             }
         }
         
@@ -100,7 +102,7 @@ public static class BW2MapExtensions
                 var doorIndex = foundBuildingContainer.Headers.FindIndex(x => x.ID == foundHeader.DoorID && foundHeader.DoorID != -1);
                 var doorModel = doorIndex == -1 ? null : foundBuildingContainer.Models[doorIndex].ExtractModels(foundBuildingTileset.TextureData).First();
                 var doorPos = doorIndex == -1 ? Vector3.Zero : foundHeader.DoorLocation;
-                actors.Add(new Actor(buildingModel, doorModel, doorPos, building.Rotation, building.Location, building.LocationFlags));
+                actors.Add(new Actor(buildingModel, doorModel, doorPos, building.Rotation, building.Location, building.LocationFlags, true));
             }
         
             return (actors, mapFileData.X, mapFileData.Y, true);

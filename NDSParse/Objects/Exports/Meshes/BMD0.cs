@@ -21,10 +21,10 @@ public class BMD0 : NDSObject
             switch (ext)
             {
                 case "MDL0":
-                    ModelData = Construct<MDL0>(reader.Spliced(offset));
+                    ModelData = ConstructExport<MDL0>(reader.Spliced(offset));
                     break;
                 case "TEX0":
-                    TextureData = Construct<TEX0>(reader.Spliced(offset));
+                    TextureData = ConstructExport<TEX0>(reader.Spliced(offset));
                     break;
             }
         });

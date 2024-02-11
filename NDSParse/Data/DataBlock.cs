@@ -41,7 +41,7 @@ public class DataBlock
         return new BaseReader(GetBytes(), name) { Owner = Owner };
     }
     
-    public AssetReader CreateAssetReader(GameFile? file = null)
+    public AssetReader CreateAssetReader(FileBase? file = null)
     {
         return new AssetReader(GetBytes(), file);
     }
