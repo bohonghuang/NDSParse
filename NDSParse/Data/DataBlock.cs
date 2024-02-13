@@ -41,6 +41,11 @@ public class DataBlock
         return new BaseReader(GetBytes(), name) { Owner = Owner };
     }
     
+    public BaseReader CreateSealedReader(string name = "")
+    {
+        return new SealedReader(GetBytes(), name);
+    } 
+    
     public AssetReader CreateAssetReader(FileBase? file = null)
     {
         return new AssetReader(GetBytes(), file);

@@ -24,8 +24,6 @@ public class PAMC : NDSExport
         NextMapOffset = reader.Read<uint>();
 
         var mapEntries = LastChar - FirstChar + 1;
-
-
         switch (Type)
         {
             case 0:

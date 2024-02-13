@@ -81,6 +81,11 @@ public class BaseReader : GenericBufferReader
         Position = originalPos;
     }
 
+    public string PeekExtension()
+    {
+        return Peek(() => ReadString(4));
+    }
+
     public float ReadIntAsFloat() => FloatExtensions.ToFloat(Read<int>(), 1, 19, 12);
     public float ReadShortAsFloat() => FloatExtensions.ToFloat(Read<ushort>(), 1, 3, 12);
 }

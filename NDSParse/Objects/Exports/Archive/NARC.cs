@@ -13,16 +13,16 @@ public class NARC : NDSObject
     {
         base.Deserialize(reader);
         
-        var fat = ConstructExport<BTAF>(reader);
-        var fnt = ConstructExport<BTNF>(reader);
-        var gimf = ConstructExport<GMIF>(reader);
+        var fat = GetBlock<BTAF>();
+        var fnt = GetBlock<BTNF>();
+        var gmif = GetBlock<GMIF>();
         
         // technicaly gmif data but i would rather control it out here
-        var dataOffset = (int) reader.Position;
+        var dataReader = gmif.Data.CreateSealedReader();
         for (ushort id = 0; id < fat.FileBlocks.Count; id++)
         {
             var fileBlock = fat.FileBlocks[id];
-            var startPosition = fileBlock.Offset + dataOffset;
+            var startPosition = fileBlock.Offset;
 
             string name;
             if (id < fnt.FilesById.Count)
@@ -31,8 +31,8 @@ public class NARC : NDSObject
             }
             else if (fileBlock.Length > 0)
             {
-                reader.Position = startPosition;
-                var extension = reader.Peek(() => reader.ReadString(4)).ToLower();
+                dataReader.Position = startPosition;
+                var extension = dataReader.PeekExtension();
                 if (!FileTypeRegistry.Contains(extension)) extension = "bin";
                 
                 name = $"{id}.{extension}";
@@ -42,7 +42,7 @@ public class NARC : NDSObject
                 continue;
             }
 
-            Files[name] = new GameFile(name, new DataBlock(reader, startPosition, fileBlock.Length));
+            Files[name] = new GameFile(name, new DataBlock(dataReader, startPosition, fileBlock.Length));
         }
     }
 

@@ -14,7 +14,7 @@ public class RTFN : NDSObject
     
     public FNIF FontInfo;
     public PLGC CharacterData;
-    public List<PAMC> CharacterMaps = [];
+    public PAMC[] CharacterMaps;
     
     public override string Magic => "RTFN";
 
@@ -22,15 +22,9 @@ public class RTFN : NDSObject
     {
         base.Deserialize(reader);
 
-        FontInfo = ConstructExport<FNIF>(reader.Spliced());
-        CharacterData = ConstructExport<PLGC>(reader.Spliced(FontInfo.PLGCOffset - NDSExport.HEADER_SIZE));
-        var mapOffset = FontInfo.PAMCOffset;
-        do
-        {
-            var map = ConstructExport<PAMC>(reader.Spliced(mapOffset - NDSExport.HEADER_SIZE));
-            mapOffset = map.NextMapOffset;
-            CharacterMaps.Add(map);
-        } while (mapOffset != 0x00 && mapOffset < reader.Size);
+        FontInfo = GetBlock<FNIF>();
+        CharacterData = GetBlock<PLGC>();
+        CharacterMaps = GetBlocks<PAMC>();
 
         foreach (var characterMap in CharacterMaps)
         {

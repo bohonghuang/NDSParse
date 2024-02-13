@@ -9,24 +9,14 @@ public class BMD0 : NDSObject
     public TEX0? TextureData;
     
     public override string Magic => "BMD0";
+    public override bool HasBlockOffsets => true;
 
-    protected override bool ContainsSubfiles => true;
 
     public override void Deserialize(BaseReader reader)
     {
         base.Deserialize(reader);
-        
-        ManageSubFiles(reader, (ext, offset) =>
-        {
-            switch (ext)
-            {
-                case "MDL0":
-                    ModelData = ConstructExport<MDL0>(reader.Spliced(offset));
-                    break;
-                case "TEX0":
-                    TextureData = ConstructExport<TEX0>(reader.Spliced(offset));
-                    break;
-            }
-        });
+
+        ModelData = GetBlock<MDL0>();
+        TextureData = GetBlock<TEX0>();
     }
 }
