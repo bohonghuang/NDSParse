@@ -20,4 +20,10 @@ public class IndexedPaletteImage : IndexedImage
         Palettes = new List<Palette>();
         IsFirstColorTransparent = false;
     }
+    
+    public IndexedPaletteImage(IndexedImage image, Palette palette, bool isFirstColorTransparent = true) : base(image.Pixels, image.MetaData, image.Name)
+    {
+        Palettes = [palette];
+        IsFirstColorTransparent = isFirstColorTransparent;
+    }
 }

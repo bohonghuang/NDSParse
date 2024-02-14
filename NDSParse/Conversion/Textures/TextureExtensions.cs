@@ -1,3 +1,6 @@
+using NDSParse.Conversion.Textures.Images.Types;
+using NDSParse.Conversion.Textures.Palettes;
+using NDSParse.Objects.Exports.Palettes;
 using NDSParse.Objects.Exports.Textures;
 
 namespace NDSParse.Conversion.Textures;
@@ -37,6 +40,16 @@ public static class TextureExtensions
     public static bool IsIndexed(this TextureFormat format)
     {
         return format != TextureFormat.A1BGR5 && format != TextureFormat.Texel;
+    }
+
+    public static IndexedPaletteImage CombineWithPalette(this IndexedImage image, Palette palette, bool firstColorIsTransparent = true)
+    {
+        return new IndexedPaletteImage(image, palette, firstColorIsTransparent);
+    }
+    
+    public static IndexedPaletteImage CombineWithPalette(this RGCN texture, RLCN palette, int paletteIndex = 0, bool firstColorIsTransparent = true)
+    {
+        return new IndexedPaletteImage(texture.TextureData.Texture, palette.PaletteData.Palettes[paletteIndex], firstColorIsTransparent);
     }
 }
 
