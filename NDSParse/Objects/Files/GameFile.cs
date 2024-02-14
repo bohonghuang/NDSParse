@@ -9,8 +9,6 @@ public class GameFile : FileBase
     {
         Data = data;
     }
-    
-    
 
     public T Load<T>() where T : Deserializable, new() => Deserializable.Construct<T>(CreateReader());
     

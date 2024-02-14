@@ -71,6 +71,7 @@ public class NDSProvider
             }
 
             var gameFile = new GameFile(fileName, fat.FileBlocks[id]);
+            gameFile.Provider = this;
             Files[fileName] = gameFile;
         }
     }

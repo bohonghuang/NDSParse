@@ -64,11 +64,3 @@ public class PAMC : NDSExport
     }
     
 }
-
-public class PAMCInfo : Deserializable
-{
-    public override void Deserialize(BaseReader reader)
-    {
-        
-    }
-}

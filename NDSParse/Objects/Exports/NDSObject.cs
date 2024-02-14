@@ -7,9 +7,9 @@ namespace NDSParse.Objects.Exports;
 
 public class NDSObject : Deserializable
 {
-    public string Name => File?.Name ?? string.Empty;
-    public string Path => File?.Path ?? string.Empty;
-    public FileBase? File;
+    public string Name => File.Name ?? string.Empty;
+    public string Path => File.Path ?? string.Empty;
+    public FileBase File;
 
     public List<NDSExport> Blocks = [];
     
@@ -21,12 +21,15 @@ public class NDSObject : Deserializable
 
     public virtual string Magic => string.Empty;
     public virtual bool HasBlockOffsets => false;
+
+    private const int LITTLE_ENDIAN = 0xFFFE;
+    private const int BIG_ENDIAN = 0xFEFF;
     
     public override void Deserialize(BaseReader reader)
     {
         if (reader is AssetReader assetReader)
         {
-            File = assetReader.File;
+            File = assetReader.File!;
         }
         
         ReadMagic = reader.ReadString(4);
@@ -37,7 +40,7 @@ public class NDSObject : Deserializable
 
         var bom = reader.Read<ushort>();
         var version = reader.Read<ushort>();
-        if (bom == 0xFFFE) version = (ushort) ((version & 0xFF) << 8 | version >> 8);
+        if (bom == LITTLE_ENDIAN) version = (ushort) ((version & 0xFF) << 8 | version >> 8);
         Version = new Version(version >> 8, version & 0xFF);
         FileSize = reader.Read<uint>();
         BlockStart = reader.Read<ushort>();

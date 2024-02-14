@@ -14,7 +14,10 @@ public class PLGC : NDSExport
     public byte CharacterWidth;
     public byte Depth;
     public byte Rotation;
+    public int CharacterCount;
     public Palette Palette;
+
+    public List<WidthInfo> EmbeddedWidthInfos = [];
 
     public List<byte[]> Tiles = [];
     
@@ -32,10 +35,18 @@ public class PLGC : NDSExport
         Depth = reader.ReadByte();
         Rotation = reader.ReadByte();
 
-        var characterCount = (DataSize - 8) / BoxByteSize;
-        for (var i = 0; i < characterCount; i++)
+        CharacterCount = (int) ((DataSize - 8) / BoxByteSize);
+        for (var i = 0; i < CharacterCount; i++)
         {
-            Tiles.Add(BytesToBits(reader.ReadBytes(BoxByteSize)));
+            if (Parent.File.Provider.Header.GameCode.Equals("IRBO") || Parent.File.Provider.Header.GameCode.Equals("IREO"))
+            {
+                EmbeddedWidthInfos.Add(Construct<WidthInfo>(reader));
+                Tiles.Add(BytesToBits(reader.ReadBytes(BoxByteSize - WidthInfo.SIZE)));
+            }
+            else
+            {
+                Tiles.Add(BytesToBits(reader.ReadBytes(BoxByteSize)));
+            }
         }
 
         Palette = CalculatePalette(Depth);

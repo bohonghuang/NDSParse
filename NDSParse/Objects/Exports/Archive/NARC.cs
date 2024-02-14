@@ -42,7 +42,9 @@ public class NARC : NDSObject
                 continue;
             }
 
-            Files[name] = new GameFile(name, new DataBlock(dataReader, startPosition, fileBlock.Length));
+            var gameFile = new GameFile(name, new DataBlock(dataReader, startPosition, fileBlock.Length));
+            gameFile.Provider = File.Provider;
+            Files[name] = gameFile;
         }
     }
 

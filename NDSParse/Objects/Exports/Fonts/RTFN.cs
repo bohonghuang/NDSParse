@@ -13,8 +13,9 @@ public class RTFN : NDSObject
     public List<Character> Characters = [];
     
     public FNIF FontInfo;
-    public PLGC CharacterData;
-    public PAMC[] CharacterMaps;
+    public PLGC Bitmaps;
+    public HDWC Widths;
+    public PAMC[] Maps;
     
     public override string Magic => "RTFN";
 
@@ -23,10 +24,12 @@ public class RTFN : NDSObject
         base.Deserialize(reader);
 
         FontInfo = GetBlock<FNIF>();
-        CharacterData = GetBlock<PLGC>();
-        CharacterMaps = GetBlocks<PAMC>();
+        Bitmaps = GetBlock<PLGC>();
+        Widths = GetBlock<HDWC>();
+        Maps = GetBlocks<PAMC>();
+        
 
-        foreach (var characterMap in CharacterMaps)
+        foreach (var characterMap in Maps)
         {
             foreach (var (index, character) in characterMap.Map)
             {
@@ -34,7 +37,8 @@ public class RTFN : NDSObject
                 {
                     Index = index,
                     CharCode = character,
-                    Image = GetChar(CharacterData.Tiles[index], CharacterData.Depth, CharacterData.BoxWidth, CharacterData.BoxHeight, CharacterData.Palette)
+                    Image = GetChar(Bitmaps.Tiles[index], Bitmaps.Depth, Bitmaps.BoxWidth, Bitmaps.BoxHeight, Bitmaps.Palette),
+                    WidthInfo = Widths.IsValid ? Widths.Infos[index] : Bitmaps.EmbeddedWidthInfos[index]
                 });
             } 
         }
@@ -69,4 +73,5 @@ public class Character
     public int Index;
     public ushort CharCode;
     public Image<Rgba32> Image;
+    public WidthInfo WidthInfo;
 }
