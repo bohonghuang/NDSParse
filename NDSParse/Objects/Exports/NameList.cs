@@ -25,7 +25,7 @@ public abstract class NameListBase<T> : IEnumerable
     
     public readonly Dictionary<string, T> Dict = new();
 
-    public KeyValuePair<string, T> Get(int i) => Dict.ElementAt(i);
+    public KeyValuePair<string, T> Get(int i) => Dict.ElementAt(i >= Dict.Count ? 0 : i);
 
     protected NameListBase(BaseReader reader, Func<T> func)
     {

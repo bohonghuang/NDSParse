@@ -148,7 +148,7 @@ public class NDSObject : Deserializable
         return asset;
     }
 
-    public T GetBlock<T>() => Blocks.OfType<T>().First();
+    public T GetBlock<T>() => Blocks.OfType<T>().FirstOrDefault();
     public T[] GetBlocks<T>() => Blocks.OfType<T>().ToArray();
 
     public override string ToString()

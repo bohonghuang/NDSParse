@@ -69,7 +69,7 @@ public class TEX0 : NDSExport
         for (var textureIndex = 0; textureIndex < textureInfos.Count; textureIndex++)
         {
             var (textureName, textureInfo) = textureInfos.Get(textureIndex);
-            var (paletteName, paletteOffset) = paletteInfos.Dict.FirstOrDefault(pair => pair.Key.Equals(textureName + "_pl"), paletteInfos.Dict.First());
+            var (paletteName, paletteOffset) = paletteInfos.Dict.FirstOrDefault(pair => pair.Key.Equals(textureName + "_pl"), paletteInfos.Get(textureIndex));
             
             var paletteReader = new DataBlock(reader, (int) (paletteOffset * 8 + PaletteDataOffset), textureInfo.Format.PaletteSize()).CreateReader();
             var palette = new Palette(paletteReader.ReadColors<BGR555>(paletteReader.Size / 2), paletteName);
