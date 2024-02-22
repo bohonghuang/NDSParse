@@ -18,6 +18,7 @@ public class ImageTypeBase
 
 public class ImageMetaData
 {
+    public TextureFormat Format;
     public int Width;
     public int Height;
     public bool RepeatU;
@@ -25,8 +26,9 @@ public class ImageMetaData
     public bool FlipU;
     public bool FlipV;
 
-    public ImageMetaData(int width, int height, bool repeatU = false, bool repeatV = false, bool flipU = false, bool flipV = false)
+    public ImageMetaData(int width, int height, TextureFormat format = TextureFormat.None, bool repeatU = false, bool repeatV = false, bool flipU = false, bool flipV = false)
     {
+        Format = format;
         Width = width;
         Height = height;
         RepeatU = repeatU;

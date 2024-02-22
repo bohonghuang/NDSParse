@@ -23,9 +23,6 @@ public class RAHC : NDSExport
 
         NumYTiles = reader.Read<ushort>();
         NumXTiles = reader.Read<ushort>();
-        if (NumXTiles == 0xFFFF) NumXTiles = 1;
-        if (NumYTiles == 0xFFFF) NumYTiles = 1;
-        
         Format = (TextureFormat) reader.Read<uint>();
 
         reader.Position += 4;
@@ -49,8 +46,8 @@ public class RAHC : NDSExport
             }
             else
             {
-                width = 256;
-                height = (int) (pixelCount / 256);
+                width = 32;
+                height = (int) (pixelCount / 32);
             }
         }
         
@@ -71,7 +68,7 @@ public class RAHC : NDSExport
 
         if (Format.IsIndexed())
         {
-            Texture = new IndexedImage(pixels, new ImageMetaData(width, height), "Texture");
+            Texture = new IndexedImage(pixels, new ImageMetaData(width, height, Format), "Texture");
         }
         else
         {
