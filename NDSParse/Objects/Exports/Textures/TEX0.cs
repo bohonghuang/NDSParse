@@ -73,7 +73,7 @@ public class TEX0 : NDSExport
             
             var paletteReader = new DataBlock(reader, (int) (paletteOffset * 8 + PaletteDataOffset), textureInfo.Format.PaletteSize()).CreateReader();
             var palette = new Palette(paletteReader.ReadColors<BGR555>(paletteReader.Size / 2), paletteName);
-            
+
             var pixelReader = new DataBlock(reader, (int) (textureInfo.TextureOffset * 8 + TextureDataOffset), textureInfo.Width * textureInfo.Height * textureInfo.Format.BitsPerPixel() / 8).CreateReader();
             var pixels = textureInfo.Format switch
             {

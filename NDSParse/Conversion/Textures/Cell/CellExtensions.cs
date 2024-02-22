@@ -2,17 +2,14 @@ using NDSParse.Conversion.Textures.Images.Types;
 using NDSParse.Objects.Exports.Palettes;
 using NDSParse.Objects.Exports.Textures;
 using NDSParse.Objects.Exports.Textures.Cell;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.ColorSpaces;
-using SixLabors.ImageSharp.PixelFormats;
 
 namespace NDSParse.Conversion.Textures.Cell;
 
 public static class CellExtensions
 {
-    public static List<IndexedPaletteImage> ExtractCells(this RECN resource, RGCN texture, RLCN palette, bool firstColorIsTransparent = true)
+    public static List<IndexedPaletteImage> ExtractCells(this RECN resource, RGCN texture, RLCN palette, int paletteIndex = 0, bool firstColorIsTransparent = true)
     {
-        var image = texture.CombineWithPalette(palette, firstColorIsTransparent: firstColorIsTransparent);
+        var image = texture.CombineWithPalette(palette, paletteIndex, firstColorIsTransparent);
         var cells = resource.CellBank.Banks.SelectMany(bank => bank.Cells);
 
         var outputImages = new List<IndexedPaletteImage>();
