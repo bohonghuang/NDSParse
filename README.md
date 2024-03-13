@@ -5,7 +5,8 @@ An NDS Rom Parsing Library in C#
 - NARC
  
 - RLCN (NCLR)
-- RGCN (NCGN)
+- RGCN (NCGR)
+- RECN (NCER) (unfinished)
 - RTFN (NFTR)
 
 - BTX0
